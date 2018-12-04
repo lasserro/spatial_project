@@ -15,11 +15,9 @@ Pop_Nuts2$time <- as.numeric(Pop_Nuts2$time)
 Pop_Nuts3$time <- as.numeric(Pop_Nuts3$time)
 
 
-
 Pop_Nuts3_new <- Pop_Nuts3 %>% mutate(NUTS=nchar(lapply(Pop_Nuts3$geo, toString))) %>% filter(time >= 2000, sex=="T", age=="TOTAL", NUTS==5)
+Pop_Nuts3_new$geo<-droplevels(Pop_Nuts3_new$geo)
 
-Pop_Nuts3_new <- Pop_Nuts3 %>% mutate(NUTS=nchar(lapply(Pop_Nuts3$geo, toString)))
-
-nchar(lapply(Pop_Nuts3_new$geo, toString))                                      
-                                      
-table(Pop_Nuts3_new$geo)
+table(Pop_Nuts3_new$time)
+                                   
+substr(x, start = 1, stop = 2)                                   
