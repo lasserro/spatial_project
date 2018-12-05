@@ -19,3 +19,4 @@ Pop_Nuts3_new <- Pop_Nuts3 %>% filter(time >= 2000, sex=="T", age=="TOTAL", ncha
 
 
 substr(x, start = 1, stop = 2)                                   
+ii
