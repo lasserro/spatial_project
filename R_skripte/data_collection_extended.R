@@ -3,18 +3,118 @@
 ##############its a MESS, i will tidy it up, do not delete###############
 #########################################################################
 
-
-
 library(eurostat)
 library(dplyr)
 
 #EurostatTOC <- get_eurostat_toc()
 
 ##Get Data
+# Das sind alle Daten die wir bis jetzt gefunden haben, GDP auf Nuts3 Ebene
+#leider erst ab 2000, das komische is, das im paper die Zahlen bis 1995 
+#zurückgehen, wo haben die die her???
+
+
+
 #GDP_Nuts2 <- get_eurostat('nama_10r_2gdp', time_format = "raw")
 GDP_Nuts3 <- get_eurostat('nama_10r_3gdp', time_format = "raw", , stringsAsFactors = FALSE)
-#Pop_Nuts2 <- get_eurostat('demo_r_pjangroup', time_format = "raw")
+Pop_Nuts2 <- get_eurostat('demo_r_pjangroup', time_format = "raw", stringsAsFactors = FALSE)
 Pop_Nuts3 <- get_eurostat('demo_r_pjanaggr3', time_format = "raw", stringsAsFactors = FALSE)
+
+###############################DEFINE#########################
+##Which countries to drop
+drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR","LI")
+nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+##the time frame
+period<-c(2000:2017)
+##unit of GDP-measurement
+measure="EUR_HAB"
+##############################################################
+
+##Check if datasets for Nuts2 and Nuts3 are the same
+
+nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+period<-c(2000:2017)
+
+pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL"
+         ,time %in% period
+         ,!country %in% nonEU
+  )
+pop2 <- Pop_Nuts2 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL"
+         ,time %in% period
+         ,!country %in% nonEU
+  )
+
+discrep <- mapply(setdiff, pop2, pop3)
+discrep$values
+
+table(pop2==pop3)
+
+X<-matrix(NA,length(pop2),length(pop2$values))
+X<-as.data.frame(X)
+for (i in 1:length(pop3$values)) {
+if(pop2$values[i]!=pop3$values[i]){X[i,]<-pop2[i,]}  
+}
+
+com<-intersect(pop2$values,pop3$values)
+
+pop2 <- Pop_Nuts2 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL"
+         ,time %in% period
+         ,!country %in% nonEU
+         ,!values %in% com
+  )
+
+
+
+
+##Data Transformation
+#1. Population: Nuts3
+
+pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==5,
+         sex=="T",
+         age=="TOTAL"
+         #,time %in% period,
+         #!country %in% drop
+         )
+
+##2. Population: Nuts2
+
+pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL"
+         #,time %in% period,
+         #!country %in% drop
+         )
+
+##3. GDP: Nuts3
+gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==5,
+         unit == measure
+         #
+         #,time %in% period,
+         #!country %in% drop
+         )
+##4. GDP: Nuts2
+gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
+  filter(nchar(geo)==4,
+         unit == measure
+         #,time %in% period,
+         #!country %in% drop
+         )
+
+#rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+
+
 
 ##Data Transformation
 #1. Population:Nuts3
