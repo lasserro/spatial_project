@@ -3,7 +3,7 @@ library(dplyr)
 
 ###############################DEFINE#########################
 ##Which countries to drop
-drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR")
+drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR","LI")
 ##the time frame
 period<-c(2003:2016)
 ##unit of GDP-measurement
@@ -22,34 +22,35 @@ Pop_Nuts3 <- get_eurostat('demo_r_pjanaggr3', time_format = "raw",
 #1. Population: Nuts3
 
 
-drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR")
-period<-c(2003:2016)
-
 pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-                      filter(time %in% period,
-                      sex=="T",
-                      age=="TOTAL",
-                      nchar(geo)==5,
-                      !country %in% drop)
+                      filter(nchar(geo)==5,
+                             sex=="T",
+                             age=="TOTAL",
+                             time %in% period,
+                             !country %in% drop)
 
 ##2. Population: Nuts2
 
 pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-                      filter(time %in% period,
+                      filter(nchar(geo)==4,
                              sex=="T",
                              age=="TOTAL",
-                             nchar(geo)==4,
+                             time %in% period,
                              !country %in% drop)
 
 ##3. GDP: Nuts3
 gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
                       filter(nchar(geo)==5,
                              unit == measure,
-                             time %in% period)
+                             time %in% period,
+                             !country %in% drop)
 ##4. GDP: Nuts2
 gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
                       filter(nchar(geo)==4,
                              unit == measure,
-                             time %in% period)
+                             time %in% period,
+                             !country %in% drop)
 
-rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+#rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+
+

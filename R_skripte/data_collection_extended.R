@@ -1,3 +1,10 @@
+
+#########################################################################
+##############its a MESS, i will tidy it up, do not delete###############
+#########################################################################
+
+
+
 library(eurostat)
 library(dplyr)
 
@@ -151,5 +158,37 @@ ctr3g <- ctr3[!rownames(ctr3) %in% drop,]
 ##BUT: Here we have NO changes in number i=of obs, very curious, could be a problem
 
 
+##doesnt work: needs rework do not delete
+Countries<-rownames(table(gdp2$country))
+n<-length(Countries)
+k<-length(period)
+ctr2<-matrix(NA,2*n,k)
+rownames(ctr2)<-c(Countries, Countries)
+colnames(ctr2)<-period
 
+for (i in 1:n) {
+  t<-table(pop2$time[pop2$country==Countries[i]])
+  ctr2[2*i-1,(k-length(t)+1):k]<-t
+  t<-table(gdp2$time[gdp2$country==Countries[i]])
+  ctr2[2*i,(k-length(t)+1):k]<-t
+}
 
+##Es scheint Deutschland ist auch ein Problem: wahrschienlich ist der Grund: Brandenburg wurde von 2003 bis 2011 in die NUTS-2-Regionen Brandenburg-Nordost und Brandenburg-Südwest geteilt, in der Absicht, nach der EU-Erweiterung vom 1. Mai 2004 wenigstens noch für den ärmeren Nordosten weiterhin EU-Fördergelder zugewiesen zu bekommen.
+siehe: https://de.wikipedia.org/wiki/NUTS:DE#cite_note-1
+
+pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL",
+         time %in% period,
+         country=="DE")
+
+##4. GDP: Nuts2
+gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
+  filter(nchar(geo)==4,
+         unit == measure,
+         time %in% period,
+         country=="DE")
+
+cs<- pop2  %>%filter(time==2005)
+c<- gdp2  %>%filter(time==2005)
