@@ -25,3 +25,23 @@ To Dos:
   
 7. WTF is going on with the UK????! So much GDP (observations!)
 
+
+8. Wir haben beim GDP 6 verschiedene units, which to use?
+
+  MIO_EUR Millions of euro (from 1.1.1999)/Millions of
+ECU (up to 31.12.1998)
+
+MIO_PPS Millions of PPS (Purchasing Power Standard)
+
+PPS_HAB Purchasing Power Standard per
+inhabitant
+
+PPS_HAB_EU Purchasing Power Standard per inhabitant
+in percentage of the EU average
+
+EUR_HAB Euro per inhabitant
+
+EUR_HAB_EU Euro per inhabitant in percentage of the EU
+average 
+
+source: https://ec.europa.eu/eurostat/cache/metadata/Annexes/reg_educ_esms_an1.pdf

@@ -71,8 +71,8 @@ orgctr <- sort(orgctr)
 #Cyprus: , paper drops it for statistical reasons, maybe bcs: Nuts2==Nuts3?
 
 drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR")
-ctr3 <- ctr3[!rownames(ctr3) %in% drop,]
-ctr2 <- ctr2[!rownames(ctr2) %in% drop,]
+ctr3p <- ctr3[!rownames(ctr3) %in% drop,]
+ctr2p <- ctr2[!rownames(ctr2) %in% drop,]
 
 
 ##Looking at the matrix now i suggest removing the years 2000,2001,2002. Then we have no more NAs. 
@@ -87,7 +87,7 @@ ctr2 <- ctr2[!rownames(ctr2) %in% drop,]
 ##Data Transformation
 #1. GDP:Nuts3
 
-gdp <- GDP_Nuts3 %>% filter(nchar(geo)==5)
+gdp <- GDP_Nuts3 %>% filter(nchar(geo)==5, unit == "MIO_EUR")
 
 #Check number of Observations in Nuts3regions per country per year:
 #Get country-identifier CTR as column
@@ -107,7 +107,7 @@ for (i in 1:n) {
 rm(t,n,k,popc,i)
 
 ##Same for Nuts_2
-pop <- GDP_Nuts3 %>% filter(nchar(geo)==4)
+pop <- GDP_Nuts3 %>% filter(nchar(geo)==4, unit == "MIO_EUR")
 popc <- pop %>% mutate(CTR=substr(geo, start = 1, stop = 2))
 #create Matrix  ctr with years and number of observations per country per year (its messy, but it works (fast))
 Countries<-rownames(table(popc$CTR))
@@ -143,9 +143,13 @@ orgctr <- sort(orgctr)
 #Cyprus: , paper drops it for statistical reasons, maybe bcs: Nuts2==Nuts3?
 
 drop<-list("AL","CH","EU","IS","ME","MK","NO")
-ctr2 <- ctr2[!rownames(ctr2) %in% drop,]
-ctr3 <- ctr3[!rownames(ctr3) %in% drop,]
+ctr2g <- ctr2[!rownames(ctr2) %in% drop,]
+ctr3g <- ctr3[!rownames(ctr3) %in% drop,]
 
 
 ##Compare this to population, we only have NAs in BELGIUM, still dropping 2000,2001,2002. =>to combine sets 
 ##BUT: Here we have NO changes in number i=of obs, very curious, could be a problem
+
+
+
+
