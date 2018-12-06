@@ -194,7 +194,7 @@ for (i in 1:n) {
   for (j in 1:k) {
     
     if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
-    {c[j]<-t[o]
+    {c[j]<-t[q]
     q=q+1}
   }
   
@@ -205,7 +205,7 @@ for (i in 1:n) {
   q=1
   for (j in 1:k) {
     if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
-    {c[j]<-t[o]
+    {c[j]<-t[q]
     q=q+1}
   } 
   
@@ -462,7 +462,71 @@ compare_3x
 
 NEEEEEEEVERMIND, That code produces NAS, WHAT THE FUCKKKK?????????!!!!!!!
 
+############################################################################
+
+#new try
+
 
 ##Compare countries from papers with our sample:
 orgctr <- c("BE","DK","DE","EL","ES","FR","IE","IT","NL","LU","AT","PT","FI","SE","UK","CZ","HU","PL","SK","EE","LT","LV","SI","BG","RO")
 orgctr <- sort(orgctr)
+
+
+##1. Population: Nuts3
+pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==5,
+         sex=="T",
+         age=="TOTAL",
+         time %in% period,
+         !country %in% nonEU)
+
+##2. Population: Nuts2
+pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==4,
+         sex=="T",
+         age=="TOTAL",
+         time %in% period,
+         !country %in% nonEU)
+
+##3. GDP: Nuts3
+gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  filter(nchar(geo)==5,
+         unit == measure,
+         time %in% period,
+         !country %in% nonEU)
+
+##4. GDP: Nuts2
+gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
+  filter(nchar(geo)==4,
+         unit == measure,
+         time %in% period,
+         !country %in% nonEU)
+
+
+#####################
+
+library(tidyverse)
+
+pop2x <- pop2 %>% group_by(country) %>% collect()
+
+
+pop2x <- pop2 %>% separate(pop2,values,Countries,sep = country)
+
+
+pop2x <-pop2 %>% group_by(country) %>% extract()
+
+separate(data, col, into, sep = "[^[:alnum:]]+", remove = TRUE,
+         convert = FALSE, extra = "warn", fill = "warn", ...)
+  
+  
+  pull(values)
+  
+  
+  group_by(country)
+
+
+
+
+
+
+
