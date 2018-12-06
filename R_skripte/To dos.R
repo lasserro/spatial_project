@@ -6,9 +6,9 @@ To Dos:
   #FR, 2013
   #PL, 2010
   Und ist das überhaupt ein Problem?
-  Und watum nur in Pop nicht in Gdp???!
+  Und warum nur in Pop nicht in Gdp???!
   
-2: Was ist das Problem mit Zypern, malta?
+2: Was ist das "statistische" Problem mit Zypern, malta aus dem paper?
   
   
 3: Woher haben die die Daten für Dänemark?
@@ -21,6 +21,7 @@ To Dos:
   
   
 6. in den Nuts3 daten von Eurostat sind auch die Nuts2 daten drin. Sind diese ident mit dem EUrostat Nuts2 datenset?
+  CHECK Yesss, the are (i think)
   
   
 7. WTF is going on with the UK????! So much GDP (observations!)
@@ -28,8 +29,8 @@ To Dos:
 
 8. Wir haben beim GDP 6 verschiedene units, which to use?
 
-  MIO_EUR Millions of euro (from 1.1.1999)/Millions of
-ECU (up to 31.12.1998)
+  MIO_EUR Millions of euro /Millions of
+ECU 
 
 MIO_PPS Millions of PPS (Purchasing Power Standard)
 

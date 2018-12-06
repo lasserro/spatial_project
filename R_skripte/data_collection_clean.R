@@ -3,15 +3,13 @@ library(dplyr)
 
 ###############################DEFINE#########################
 ##Which countries to drop
-drop<-list("AL","CH","DK","EF","EU","IS","ME","MK","NO","TR","LI")
+nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+drop<-c(nonEU,"DK")
 ##the time frame
 period<-c(2003:2016)
 ##unit of GDP-measurement
 measure="EUR_HAB"
 ##############################################################
-
-
-
 
 GDP_Nuts3 <- get_eurostat('nama_10r_3gdp', time_format = "raw",
                           stringsAsFactors = FALSE)
@@ -52,5 +50,6 @@ gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
                              !country %in% drop)
 
 rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+
 
 
