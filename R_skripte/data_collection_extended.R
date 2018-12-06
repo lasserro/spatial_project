@@ -180,15 +180,44 @@ Countries<-rownames(table(gdp2$country))
 n<-length(Countries)
 k<-length(period)
 compare_2<-matrix(NA,2*n,k)
-rownames(compare_2)<-sort(c(Countries, Countries))
+Country_pop <- sapply(Countries, function(x) paste(x, "_pop", sep = ""))
+Country_gdp <- sapply(Countries, function(x) paste(x, "_gdp", sep = ""))
+rownames(compare_2)<-sort(c(Country_pop, Country_gdp))
 colnames(compare_2)<-period
+
 
 for (i in 1:n) {
   t<-table(pop2$time[pop2$country==Countries[i]])
-  compare_2[2*i-1,(k-length(t)+1):k]<-t
+  
+  c<-rep(NA,k)
+  q=1
+  for (j in 1:k) {
+    
+    if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
+    {c[j]<-t[o]
+    q=q+1}
+  }
+  
+  compare_2[2*i,]<-c
   t<-table(gdp2$time[gdp2$country==Countries[i]])
-  compare_2[2*i,(k-length(t)+1):k]<-t
+  
+  c<-rep(NA,k)
+  q=1
+  for (j in 1:k) {
+    if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
+    {c[j]<-t[o]
+    q=q+1}
+  } 
+  
+  compare_2[2*i-1,]<-c
 }
+
+
+
+
+########################
+
+
 #and get rid of unproblematic countries:
 #That is no 0, no NA, no difference between pop and gdp and no change in number
 #of obs for different years
@@ -203,18 +232,24 @@ for (i in 1:(2*n-1)) {
 }
 
 ##Matrix with number of observations for Pop and Gdp NUTS 3
+
 Countries<-rownames(table(gdp3$country))
 n<-length(Countries)
 k<-length(period)
 compare_3<-matrix(NA,2*n,k)
-rownames(compare_3)<-sort(c(Countries, Countries))
+Country_pop <- sapply(Countries, function(x) paste(x, "_pop", sep = ""))
+Country_gdp <- sapply(Countries, function(x) paste(x, "_gdp", sep = ""))
+rownames(compare_3)<-sort(c(Country_pop, Country_gdp))
 colnames(compare_3)<-period
+
+s
+
 
 for (i in 1:n) {
   t<-table(pop3$time[pop3$country==Countries[i]])
-  compare_3[2*i-1,(k-length(t)+1):k]<-t
+  compare_x[2*i-1,(k-length(t)+1):k]<-t
   t<-table(gdp3$time[gdp3$country==Countries[i]])
-  compare_3[2*i,(k-length(t)+1):k]<-t
+  compare_x[2*i,(k-length(t)+1):k]<-t
 }
 #and get rid of unproblematic countries:
 #That is no 0, no NA, no difference between pop and gdp and no change in number
