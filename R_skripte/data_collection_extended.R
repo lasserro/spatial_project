@@ -1,7 +1,10 @@
 
-#########################################################################
-##############its a MESS, the compare matrices produce NAs, do not trust them!!!!!!!!!!!!!!!!!######################################################
-
+################################################################################
+##############Extended Code for data collection#################################
+################################################################################
+#####I. Can we use nuts3-dataset for nuts2 regions##############################
+######II. Compare matrices(to compare number of obs##############################
+################################################################################
 library(eurostat)
 library(dplyr)
 
@@ -28,7 +31,7 @@ Pop_Nuts3 <- get_eurostat('demo_r_pjanaggr3', time_format = "raw"
 
 
 ###############################################################################
-##Check if datasets for Nuts2 and Nuts3 are the same
+##I. Check if datasets for Nuts2 and Nuts3 are the same
 ###############################################################################
 ##1. For Population
 nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
@@ -118,12 +121,11 @@ gdp2uncommon <- GDP_Nuts2 %>%
 rm(list=ls())
 
 ###############################################################################
-#########Next step: What years/countries to use?###############################
+#########II.####### What years/countries to use?###############################
 ###############################################################################
 
 #For the years the maximal period is 2000-2016, as we only have data on GDP
-#for those. Where did the other guys get their data from?????!
-
+#for those.
 #We want to create a matrix, where we can easily compare data on populaton with 
 #data on GDP, we start with the maximal data set. 
 #That is the period 2000-2016
@@ -131,6 +133,9 @@ rm(list=ls())
 #There are 4 different units for GDP,
 #i just use "EUR_HAB" for now: Euro per inhabitant, note that two of those units 
 #have more observations, that might have implications for our dataset.
+
+library(eurostat)
+library(dplyr)
 
 GDP_Nuts3 <- get_eurostat('nama_10r_3gdp', time_format = "raw"
                           , stringsAsFactors = FALSE)
@@ -146,7 +151,7 @@ nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
 period<-c(2000:2016)
 ##unit of GDP
 measure="EUR_HAB"
-#############################################################
+##############################################################
 
 ##1. Population: Nuts3
 pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
@@ -178,98 +183,129 @@ gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
          time %in% period,
          !country %in% nonEU)
 
+
 ##Matrix with number of observations for Pop and Gdp NUTS 2
-Countries<-rownames(table(gdp2$country))
-n<-length(Countries)
-k<-length(period)
-compare_2<-matrix(NA,2*n,k)
+
+Countries<-rownames(table(gdp2$country)) ##take countries directly from data
+n<-length(Countries) 
+k<-length(period)    #define n and k for easier reading
+compare_nuts_2<-matrix(NA,2*n,k) #create matrix(2*n because we want gdp AND pop)
 Country_pop <- sapply(Countries, function(x) paste(x, "_pop", sep = ""))
 Country_gdp <- sapply(Countries, function(x) paste(x, "_gdp", sep = ""))
-rownames(compare_2)<-sort(c(Country_pop, Country_gdp))
-colnames(compare_2)<-period
+#Above is necessary to hav proper rownames (and distinguish between pop and gdp)
+rownames(compare_nuts_2)<-sort(c(Country_pop, Country_gdp))
+colnames(compare_nuts_2)<-period
 
 
-for (i in 1:n) {
-  t<-table(pop2$time[pop2$country==Countries[i]])
+##The loop for the matrix
+for (i in (1:n)) { #once for each country
   
-  c<-rep(NA,k)
-  q=1
-  for (j in 1:k) {
-    
-    if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
-    {c[j]<-t[q]
-    q=q+1}
+  t<-table(pop2$time[pop2$country==Countries[i]])
+  #get table with numbers of obs for country i for each year
+  
+  tt<-rep(NA,k)
+  #create empty vector with the same length as matrix rows
+  
+  for (j in 1:k) { #inner loop to place each numofobs to the right year
+    if(period[j] %in% rownames(t)) #check if year j is in table t
+    {tt[j]<-t[rownames(t)==period[j]]}#yes, put numofobs in the right spot of tt
+    else 
+    {tt[j]<-NA} #if not, put an NA there (actually unnecessary)
   }
   
-  compare_2[2*i,]<-c
+  compare_nuts_2[2*i,]<-tt #put the vector in the right place in the matrix.
+  #Note that 2*i only takes even rows (which are the pops) 2*i-1 only takes
+  #odd rows, see below
+
+  #Now the same for gdp  
   t<-table(gdp2$time[gdp2$country==Countries[i]])
   
-  c<-rep(NA,k)
-  q=1
+  tt<-rep(NA,k)
   for (j in 1:k) {
-    if(TRUE %in% (colnames(compare_2)[j] %in% rownames(t)))
-    {c[j]<-t[q]
-    q=q+1}
-  } 
+    if(period[j] %in% rownames(t))
+    {tt[j]<-t[rownames(t)==period[j]]}
+    else
+    {tt[j]<-NA}
+  }
   
-  compare_2[2*i-1,]<-c
+  compare_nuts_2[2*i-1,]<-tt
 }
-
-
-
-
-########################
-
-
-#and get rid of unproblematic countries:
-#That is no 0, no NA, no difference between pop and gdp and no change in number
-#of obs for different years
-compare_2x<-compare_2
-for (i in 1:(2*n-1)) {
-  if((!(FALSE)  %in% (compare_2[i,]==compare_2[i+1,])) 
-     && (!(NA)  %in% (compare_2[i,]==compare_2[i+1,]))
-     && (!0 %in% compare_2[i,]) && (!NA %in% compare_2[i,])
-     && length(unique(compare_3[i,]==1))
-     ){
-    compare_2x[c(i,i+1),]<-rep("cool",length(k))}
-}
-
-##Matrix with number of observations for Pop and Gdp NUTS 3
+############Compare matrix for nuts3################
 
 Countries<-rownames(table(gdp3$country))
 n<-length(Countries)
 k<-length(period)
-compare_3<-matrix(NA,2*n,k)
+compare_nuts_3<-matrix(NA,2*n,k)
 Country_pop <- sapply(Countries, function(x) paste(x, "_pop", sep = ""))
 Country_gdp <- sapply(Countries, function(x) paste(x, "_gdp", sep = ""))
-rownames(compare_3)<-sort(c(Country_pop, Country_gdp))
-colnames(compare_3)<-period
+rownames(compare_nuts_3)<-sort(c(Country_pop, Country_gdp))
+colnames(compare_nuts_3)<-period
 
-s
 
+for (i in (1:n)) {
+
+  t<-table(pop3$time[pop3$country==Countries[i]])
+  
+  tt<-rep(NA,k)
+  for (j in 1:k) {
+    if(period[j] %in% rownames(t))
+    {tt[j]<-t[rownames(t)==period[j]]}
+    else
+    {tt[j]<-NA}
+  }
+  
+  compare_nuts_3[2*i,]<-tt
+  
+  t<-table(gdp3$time[gdp3$country==Countries[i]])
+  
+  tt<-rep(NA,k)
+  for (j in 1:k) {
+    if(period[j] %in% rownames(t))
+    {tt[j]<-t[rownames(t)==period[j]]}
+    else
+    {tt[j]<-NA}
+  }
+  
+  compare_nuts_3[2*i-1,]<-tt
+}
+#########################################
+########## A refined Comparison matrix that marks all nice countries
+#########################################
+compare_nuts_3_cool<-compare_nuts_3
+
+for (i in 1:n) {  #for each country
+  if(!NA %in% compare_nuts_3[2*i-1,]) #check if there are NAs in gdp
+  {if(!0 %in% compare_nuts_3[2*i-1,]) #check if there are 0s in gdp
+  {if(!NA %in% compare_nuts_3[2*i,])  #check if there are NAs in pop
+  {if(!0 %in% compare_nuts_3[2*i,])   #check if there are 0s in pop
+  {if(!FALSE %in% (compare_nuts_3[2*i-1,]==compare_nuts_3[2*i,])) 
+                                #Check if pop and gdp have the same numofobs
+  {if(length(unique(compare_nuts_3[2*i-1,]))==1)
+                                #Check if gdp has same numofobs for each year
+  {if(length(unique(compare_nuts_3[2*i,]))==1)
+  {                             #Check if pop has same numofobs for each year
+    compare_nuts_3_cool[2*i-1,]<-rep("cool",k) 
+    compare_nuts_3_cool[2*i,]<-rep("cool",k)   #if nice, make it cool
+  }}}}}}}
+}
+
+compare_nuts_2_cool<-compare_nuts_2
 
 for (i in 1:n) {
-  t<-table(pop3$time[pop3$country==Countries[i]])
-  compare_x[2*i-1,(k-length(t)+1):k]<-t
-  t<-table(gdp3$time[gdp3$country==Countries[i]])
-  compare_x[2*i,(k-length(t)+1):k]<-t
-}
-#and get rid of unproblematic countries:
-#That is no 0, no NA, no difference between pop and gdp and no change in number
-#of obs for different years
-compare_3x<-compare_3
-for (i in 1:(2*n-1)) {
-  if((!(FALSE)  %in% (compare_3[i,]==compare_3[i+1,])) 
-     && (!(NA)  %in% (compare_3[i,]==compare_3[i+1,]))
-     && (!0 %in% compare_3[i,]) && (!NA %in% compare_3[i,])
-     && length(unique(compare_3[i,]==1))
-     ){
-    compare_3x[c(i,i+1),]<-rep("cool",length(k))}
+  if(!NA %in% compare_nuts_2[2*i-1,])
+  {if(!0 %in% compare_nuts_2[2*i-1,])
+  {if(!NA %in% compare_nuts_2[2*i,])
+  {if(!0 %in% compare_nuts_2[2*i,])
+  {if(!FALSE %in% (compare_nuts_2[2*i-1,]==compare_nuts_2[2*i,]))
+  {if(length(unique(compare_nuts_2[2*i-1,]))==1)
+  {if(length(unique(compare_nuts_2[2*i,]))==1)
+  {
+    compare_nuts_2_cool[2*i-1,]<-rep("cool",k)
+    compare_nuts_2_cool[2*i,]<-rep("cool",k)
+  }}}}}}}
 }
 
-compare_2x
-compare_3x
-
+rm(nonEU,Countries,Country_gdp,Country_pop,i,j,k,n,period,measure,t,tt)
 #now we can check those two matrices for problematic countries
 #There seem to be a lot of changes between 2000 and 2002 especially for the
 #nuts 3 regions, it looks like we should definitely drop 2000 as there are a lot
