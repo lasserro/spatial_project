@@ -12,6 +12,9 @@ library(dplyr)
 #leider erst ab 2000, das komische is, das im paper die Zahlen bis 1995 
 #zurückgehen, wo haben die die her???
 
+# robert: die haben ein ganz anderes datenset gnommn. dieser cambridge shit oder
+# so
+
 
 
 GDP_Nuts2 <- get_eurostat('nama_10r_2gdp', time_format = "raw"

@@ -7,6 +7,8 @@ nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
 drop<-c(nonEU,"DK")
 ##the time frame
 period<-c(2003:2016)
+# müssen wahrscheinlich 2016, wenn nicht auch 2015 droppen. siehe (table(gdp3$time))
+
 ##unit of GDP-measurement
 measure="EUR_HAB"
 ##############################################################
