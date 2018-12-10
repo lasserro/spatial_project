@@ -323,6 +323,8 @@ rm(nonEU,Countries,Country_gdp,Country_pop,i,j,k,n,period,measure,t,tt)
 ###############################################################################
 ##############List of problematic countries####################################
 ###############################################################################
+######################NICHT MEHR AKTUELL#######################################
+###############################################################################
 #2000 will be ignored, lets drop it
 #Countries with only 1 obs, will be ignored too, is dealt with in the paper
 ##########For nuts2:
@@ -331,7 +333,8 @@ rm(nonEU,Countries,Country_gdp,Country_pop,i,j,k,n,period,measure,t,tt)
 
 #DE:Germany, Change in numofobs in 2011, explanation see above
 
-#DK: Denmark, NAs until 2006, and little obs otherwise, this ain't good, because its included in the paper
+#DK: Denmark, NAs until 2006, and little obs otherwise, this ain't good,
+#because its included in the paper
 
 #FR:France: changes in number of obs
 
