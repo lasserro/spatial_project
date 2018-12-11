@@ -7,6 +7,7 @@
 #ist der Datengenerierungsprozess nochmal extra im Skript, kann aber
 #leicht mithilfe der DEFINE section angepasst werden.
 
+#BRUNO
 
 library(eurostat)
 library(dplyr)
