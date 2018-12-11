@@ -51,7 +51,7 @@ gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
                              time %in% period,
                              !country %in% drop)
 
-rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+#rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
 
 
 
