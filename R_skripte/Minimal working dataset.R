@@ -1,6 +1,4 @@
-#Achtung, dieses Skript generiert die Daten als 4 einzelne sets, das is eher
-#zach, da wir sie dann eh wieder joinen. Daher würd ich eher Minimal working
-#dataset II verwenden. (Stand 10.12.2018)
+#creates datasets on different levels
 
 ###############################################################################
 ########This is a minimal working set#######
@@ -57,38 +55,45 @@ gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
          time %in% period,
          !country %in% drop)
 
-rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period,nonEU)
 
 ##join datasets
 
+#First rename everything to avoid confusion later and drop unnecessary columns.
 
-#only nuts_2
-nuts_2<-inner_join(pop2,gdp2,by = c("geo", "time", "country"))
+pop3$unit<-NULL
+pop3$sex<-NULL
+pop3$age<-NULL
+colnames(pop3)[colnames(pop3)=="values"]<-"pop_3"
+colnames(pop3)[colnames(pop3)=="geo"]<-"geo_3"
 
-colnames(nuts_2)[colnames(nuts_2)=="values.y"]<-"gdp"
-colnames(nuts_2)[colnames(nuts_2)=="values.x"]<-"pop"
+pop2$unit<-NULL
+pop2$sex<-NULL
+pop2$age<-NULL
+colnames(pop2)[colnames(pop2)=="values"]<-"pop_2"
+colnames(pop2)[colnames(pop2)=="geo"]<-"geo_2"
 
-nuts_2$unit.x<-NULL
-nuts_2$sex<-NULL
-nuts_2$age<-NULL
-#nuts_2$unit.y<-NULL
+#gdp3$unit<-NULL
+colnames(gdp3)[colnames(gdp3)=="values"]<-"gdp_3"
+colnames(gdp3)[colnames(gdp3)=="geo"]<-"geo_3"
 
-#only nuts_3
-nuts_3<-inner_join(pop3,gdp3,by = c("geo", "time", "country"))
+gdp2$unit<-NULL
+colnames(gdp2)[colnames(gdp2)=="values"]<-"gdp_2"
+colnames(gdp2)[colnames(gdp2)=="geo"]<-"geo_2"
 
-colnames(nuts_3)[colnames(nuts_3)=="values.y"]<-"gdp"
-colnames(nuts_3)[colnames(nuts_3)=="values.x"]<-"pop"
+##onto the joining, start with nuts 2 (gdp and pop)
 
-nuts_3$unit.x<-NULL
-nuts_3$sex<-NULL
-nuts_3$age<-NULL
-#nuts_3$unit.y<-NULL
+nuts_2<-inner_join(pop2,gdp2,by = c("time", "country","geo_2"))
 
-#both nuts 2&3
-#df<-left_join(nuts_3, nuts_2, by = c("time","country","unit.y") )
+#joining nuts 3 (gdp and pop)
+nuts_3<-inner_join(pop3,gdp3,by = c("time", "country","geo_3"))
 
-#colnames(df)[colnames(df)=="geo.x"]<-"geo_3"
-#colnames(df)[colnames(df)=="geo.y"]<-"geo_2"
-#colnames(df)[colnames(df)=="geo.y"]<-"geo_2"
-#colnames(df)[colnames(df)=="geo.y"]<-"geo_2"
+#joining nuts 2 & 3
+df<-nuts_3 %>%
+  mutate(geo_2=substr(geo_3, start = 1, stop = 4)) %>% #needed as join-id
+  left_join(nuts_2, nuts_3, by = c("time","country","geo_2") )
 
+
+df<-df[,c(2,4,7,1,8,3,9,6,5)] # sort columns
+
+rm(gdp2,gdp3,pop2,pop3)
