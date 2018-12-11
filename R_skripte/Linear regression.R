@@ -104,7 +104,7 @@ t<-df %>%
   ))
 Y[,i] <- t(t[,2])
 }
-#TOP!!!!!! Y is y aber für alle Jahre 
+#TOP!!!!!! Y is y, aber für alle Jahre 
 
 ###################################################################
 #######WARUM ist xx nicht gleich x???????????!#####################
@@ -126,7 +126,48 @@ xx<-df %>%
 #x_1....vector of per capita GDP levels
 #x_2....numbers of nuts 3 regions in each nuts 2 region
 
-X_1<-nuts_2 %>% group_by(time) %>% left_join()
+##X_1
+n <- length(unique(df$geo_2))
+k <- length(unique(df$time))
+X_1<-matrix(NA,n,k)
+colnames(X_1)<-sort(unique(df$time))
+rownames(X_1)<-unique(df$geo_2)
+
+for (i in 1:k) {
+  t<-nuts_2 %>%
+    filter(time==sort(unique(df$time))[i]) %>%
+    select(gdp_2)
+  X_1[,i] <- t$gdp_2
+}
+
+##X_2
+n <- length(unique(df$geo_2))
+k <- length(unique(df$time))
+X_2<-matrix(NA,n,k)
+colnames(X_2)<-sort(unique(df$time))
+rownames(X_2)<-unique(df$geo_2)
+
+for (i in 1:k) {
+  t<-nuts_2 %>%
+    filter(time==sort(unique(df$time))[i]) %>%
+    select(pop_2)
+  X_2[,i] <- t$pop_2
+}
+
+
+###########The Regresssion!!!!!
+
+rm(lm)
+
+for (i in 1:k) {
+  lm<-list(lm,paste("lm",i))
+  lm[[i]]<-lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
+}
+
+as.object(paste(lm,i))
+
+
+lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
 
 
 
