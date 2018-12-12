@@ -3,7 +3,7 @@ library(dplyr)
 
 library(rgdal)
 
-setwd("C:/Users/loren/Dropbox/Spatial/SpatialProjekt")
+#setwd("C:/Users/loren/Dropbox/Spatial/SpatialProjekt")
 
 dir.create("data")
 
@@ -13,8 +13,7 @@ temp <- tempfile(fileext = ".zip")
 # download only when necessary, not every time you run the script because of the big
 # file size
 
-#download.file("http://ec.europa.eu/eurostat/cache/GISCO/distribution/v2/nuts/download/ref-nuts-2013-03m.shp.zip",
-            temp)
+#download.file("http://ec.europa.eu/eurostat/cache/GISCO/distribution/v2/nuts/download/ref-nuts-2013-03m.shp.zip",temp)
 
 outDir<-"./data"
 # now unzip the boundary data
