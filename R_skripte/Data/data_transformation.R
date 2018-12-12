@@ -1,27 +1,26 @@
-#creates datasets on different levels
 
-###############################################################################
-########This is a minimal working set#######
-########################################
-
-library(eurostat)
-library(dplyr)
-
-###############################DEFINE#########################
-##Which countries to drop
-nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
-drop<-c(nonEU,"DK","DE","FR","PL")
-##the time frame
-period<-c(2004:2014)
-
-##unit of GDP-measurement
-measure="EUR_HAB"
-##############################################################
-
-GDP_Nuts3 <- get_eurostat('nama_10r_3gdp', time_format = "raw",
-                          stringsAsFactors = FALSE)
-Pop_Nuts3 <- get_eurostat('demo_r_pjanaggr3', time_format = "raw",
-                          stringsAsFactors = FALSE)
+if(min==0){
+  ############################## DEFINE ########################
+  ## Which countries to drop
+  nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+  drop<-nonEU
+  ## the time frame
+  period<-c(2000:2016)
+  # müssen wahrscheinlich 2016, wenn nicht auch 2015 droppen.
+  # siehe (table(gdp3$time))
+  
+  ## unit of GDP-measurement
+  measure="EUR_HAB"
+  ##############################################################
+}
+if(min==1){
+  ###############################DEFINE#########################
+  nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+  drop<-c(nonEU,"DK","DE","FR","PL")
+  period<-c(2004:2014)
+  measure="EUR_HAB"
+  ############################################################## 
+} 
 
 ##Data Transformation
 
@@ -97,3 +96,9 @@ df<-nuts_3 %>%
 df<-df[,c(2,4,7,1,8,3,9,6,5)] # sort columns
 
 rm(gdp2,gdp3,pop2,pop3)
+
+
+#rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+
+n<-length(pop2$geo)
+k<-length(period)
