@@ -3,7 +3,6 @@ library(dplyr)
 
 library(rgdal)
 
-#setwd("C:/Users/loren/Dropbox/Spatial/SpatialProjekt")
 
 dir.create("data")
 
