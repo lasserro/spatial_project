@@ -50,3 +50,17 @@ source: https://ec.europa.eu/eurostat/cache/metadata/Annexes/reg_educ_esms_an1.p
 
 9. Check den Datentransformationsprozess
 Vor allem auch column names ob die eh passen
+
+10. CV Funktion verfeinern?
+    
+    Für die Fälle, in denen Nuts2=Nuts3 ist sollte unsere CV Funktion Y = 0 ausspucken
+    summary(Y==0)
+    
+11. Datatransformation
+
+    bei der erstellung der Shapefiles kommen noch extra einschränkungen (z.b !Overseas) rein,
+    die unser datenset noch weiter einschränken, so das es nicht mehr mit der jetzingen linear 
+    regression übereinstimmt. 
+    Datenselektion im Transformationfile so weit einschränken, dass im shapefile nicht mehr gepfuscht
+    werden muss?
+    
