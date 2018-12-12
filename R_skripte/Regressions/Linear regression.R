@@ -13,14 +13,14 @@
 CV<-function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
   total<-0
   for (i in 1:length(gdp3)) {
-      total<-total+
-        ((gdp3[i]-gdp2[1])^2) *
-         (pop3[i]/pop2[1])
+    total<-total+
+      ((gdp3[i]-gdp2[1])^2) *
+      (pop3[i]/pop2[1])
   }
   total<-((total^(1/2))/(gdp2[1]))
   return(total)
-  }
-  
+}
+
 
 #Versuch für AT11 und 2010, scheint zu funken
 df %>%
@@ -40,9 +40,9 @@ gdp3<-c(19700,25800,21700)
 
 
 ((
-(gdp3[1]-gdp2[1])^2*(pop3[1]/pop2[1])+
-  (gdp3[2]-gdp2[1])^2*(pop3[2]/pop2[1])+
-(gdp3[3]-gdp2[1])^2*(pop3[3]/pop2[1])
+  (gdp3[1]-gdp2[1])^2*(pop3[1]/pop2[1])+
+    (gdp3[2]-gdp2[1])^2*(pop3[2]/pop2[1])+
+    (gdp3[3]-gdp2[1])^2*(pop3[3]/pop2[1])
 )^(1/2))/(gdp2[1])
 
 #Scheint zu passen, aber die Funktion spuckt gerundete Werte aus! (ABER nicht
@@ -93,16 +93,16 @@ rownames(Y)<-unique(df$geo_2)
 
 
 for (i in 1:k) {
-t<-df %>%
-  filter(time==sort(unique(df$time))[i]) %>%
-  group_by(geo_2) %>%
-  summarise(y=CV(
-    gdp_2,
-    gdp_3,
-    pop_2,
-    pop_3
-  ))
-Y[,i] <- t(t[,2])
+  t<-df %>%
+    filter(time==sort(unique(df$time))[i]) %>%
+    group_by(geo_2) %>%
+    summarise(y=CV(
+      gdp_2,
+      gdp_3,
+      pop_2,
+      pop_3
+    ))
+  Y[,i] <- t(t[,2])
 }
 #TOP!!!!!! Y is y, aber für alle Jahre 
 
@@ -110,8 +110,8 @@ Y[,i] <- t(t[,2])
 #######WARUM ist xx nicht gleich x???????????!#####################
 x<-df %>%
   filter(time=="2010" , geo_2==c("AT11","HR03"))
-  # group_by(geo_2) %>%
- # group_by(geo_3)%>%
+# group_by(geo_2) %>%
+# group_by(geo_3)%>%
 
 xx<-df %>%
   filter(time=="2010" , geo_2=="AT11"| geo_2=="HR03")
@@ -157,11 +157,14 @@ for (i in 1:k) {
 
 ###########The Regresssion!!!!!
 
+k<-length(2004:2014)
+
+
 rm(lm)
 
 for (i in 1:k) {
   lm<-list(lm,paste("lm",i))
-  lm[[i]]<-lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
+  lm[i]<-lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
 }
 
 as.object(paste(lm,i))
@@ -169,5 +172,8 @@ as.object(paste(lm,i))
 
 lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
 
+lm <- lm(Y ~ X_1 + I(X_1^2) + X_2)
 
+summary(lm
+)
 
