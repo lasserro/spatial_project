@@ -7,7 +7,7 @@ library(eurostat)
 library(dplyr)
 library(rgdal)
 
-####Data collection
+### Data collection
 
 
 #### I changed the code in the collection so it will try to load the data from a
@@ -21,4 +21,15 @@ library(rgdal)
 
 source("./R_skripte/Data/data_download.R")
 
+### Data transformation
 
+# Define min <- 1 for minimal working dataset
+# Define min <- 0 for maximal dataset
+
+min<-1
+
+source("./R_skripte/Data/data_transformation.R")
+
+### Linear Regression
+
+source("./R_skripte/Regressions/linear_regression.R")

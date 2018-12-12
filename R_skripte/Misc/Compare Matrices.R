@@ -2,71 +2,7 @@
 ############Compare Matrices#########################################
 ####################10.12.2018#######################################
 
-##Achtung, das Skript funktioniert nur mit einer alten Spezifikation.
-#Dazu muessen pop2,pop3,gdp3,gdp2 getrennte dataframes sein. Deshalb 
-#ist der Datengenerierungsprozess nochmal extra im Skript, kann aber
-#leicht mithilfe der DEFINE section angepasst werden.
-
-#BRUNO
-
-library(eurostat)
-library(dplyr)
-
-###############################DEFINE#########################
-##Which countries to drop
-drop<-nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
-#drop<-c(nonEU,"DK","DE","FR","PL")
-##the time frame
-period<-c(2004:2014)
-#period<-c(2000:2016)
-##unit of GDP-measurement
-measure="EUR_HAB"
-##############################################################
-
-GDP_Nuts3 <- get_eurostat('nama_10r_3gdp', time_format = "raw",
-                          stringsAsFactors = FALSE)
-Pop_Nuts3 <- get_eurostat('demo_r_pjanaggr3', time_format = "raw",
-                          stringsAsFactors = FALSE)
-
-##Data Transformation
-
-#1. Population: Nuts3
-pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-  filter(nchar(geo)==5,
-         sex=="T",
-         age=="TOTAL",
-         time %in% period,
-         !country %in% drop)
-
-##2. Population: Nuts2
-pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-  filter(nchar(geo)==4,
-         sex=="T",
-         age=="TOTAL",
-         time %in% period,
-         !country %in% drop)
-
-##3. GDP: Nuts3
-gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-  filter(nchar(geo)==5,
-         unit == measure,
-         time %in% period,
-         !country %in% drop)
-
-##4. GDP: Nuts2
-gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
-  filter(nchar(geo)==4,
-         unit == measure,
-         time %in% period,
-         !country %in% drop)
-
-rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
-
-
-
-
-
-
+## Das Skript sollte nach download und transformation geladen werden.
 
 period<-(min(unique(pop2$time)):max(unique(pop2$time)))
 
@@ -190,4 +126,4 @@ for (i in 1:n) {
   }}}}}}}
 }
 
-rm(nonEU,Countries,Country_gdp,Country_pop,i,j,k,n,period,measure,t,tt)
+#rm(nonEU,Countries,Country_gdp,Country_pop,i,j,k,n,period,measure,t,tt)
