@@ -83,8 +83,24 @@ for (i in 1:k) {
 
 ### 3. Die Regression
 
-lm<-list()
+lm <- lapply(1:k, function(i) lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i]))
+
 for (i in 1:k) {
-  lm[[i]] <- lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,i])
-  names(lm)[i] <- paste("lm", i, sep = "")
+  names(lm)[i] <- paste("lm_", period[i], sep = "")
 }
+
+## 3.1 How to access stuff:
+
+# extract just coefficients
+# sapply(lm, coef)
+
+# if you need more info, get full summary call. now you can get whatever, like:
+# summaries <- lapply(lm, summary)
+
+# ...coefficents with p values:
+# lapply(summaries, function(x) x$coefficients[, c(1,4)])
+
+# ...or r-squared values
+# sapply(summaries, function(x) c(r_sq = x$r.squared, 
+# adj_r_sq = x$adj.r.squared))
+
