@@ -27,7 +27,8 @@ if(min==1){
 
 ## Population: Nuts3
 pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
-  filter(nchar(geo)==5,
+  mutate(geo_2=substr(geo, start = 1, stop = 4)) %>%
+    filter(nchar(geo)==5,
          sex=="T",
          age=="TOTAL",
          time %in% period,
@@ -43,6 +44,7 @@ pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
 
 ## GDP: Nuts3
 gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
+  mutate(geo_2=substr(geo, start = 1, stop = 4)) %>%
   filter(nchar(geo)==5,
          unit == measure,
          time %in% period,
@@ -92,7 +94,17 @@ nuts_3 <- inner_join(pop3,gdp3,by = c("time", "country","geo_3"))
 
 nuts_3 <- nuts_3[,c(2,4,1,3,6,5)]
 
-## 3.4 Join nuts 2 and 3 
+## 3.4 Number of geo_3 in geo_2 (freq)
+
+nrNuts3in2 <- as.data.frame(table(nuts_3$geo_2.x))
+colnames(nrNuts3in2) <- c('geo_2', 'freq')
+nrNuts3in2$geo_2 <- as.character(nrNuts3in2$geo_2)
+
+nrNuts3in2$freq <- nrNuts3in2$freq/length(period)
+nuts_2 <- left_join(nuts_2, nrNuts3in2, by = "geo_2")
+
+rm(nrNuts3in2)
+## 3.5 Join nuts 2 and 3 
 
 df<-nuts_3 %>%
   mutate(geo_2=substr(geo_3, start = 1, stop = 4)) %>% #needed as join-id
