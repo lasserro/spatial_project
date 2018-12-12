@@ -1,3 +1,4 @@
+### 1. Definitions
 
 if(min==0){
   ############################## DEFINE ########################
@@ -22,9 +23,9 @@ if(min==1){
   ############################################################## 
 } 
 
-##Data Transformation
+### 2. The Transformation
 
-#1. Population: Nuts3
+## Population: Nuts3
 pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
   filter(nchar(geo)==5,
          sex=="T",
@@ -32,7 +33,7 @@ pop3 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
          time %in% period,
          !country %in% drop)
 
-##2. Population: Nuts2
+## Population: Nuts2
 pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
   filter(nchar(geo)==4,
          sex=="T",
@@ -40,25 +41,24 @@ pop2 <- Pop_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
          time %in% period,
          !country %in% drop)
 
-##3. GDP: Nuts3
+## GDP: Nuts3
 gdp3 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>%
   filter(nchar(geo)==5,
          unit == measure,
          time %in% period,
          !country %in% drop)
 
-##4. GDP: Nuts2
+## GDP: Nuts2
 gdp2 <- GDP_Nuts3 %>% mutate(country=substr(geo, start = 1, stop = 2)) %>% 
   filter(nchar(geo)==4,
          unit == measure,
          time %in% period,
          !country %in% drop)
 
-rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period,nonEU)
 
-##join datasets
+### 3. Join datasets
 
-#First rename everything to avoid confusion later and drop unnecessary columns.
+## 3.1 Rename columns and drop unnecessary ones
 
 pop3$unit<-NULL
 pop3$sex<-NULL
@@ -80,25 +80,36 @@ gdp2$unit<-NULL
 colnames(gdp2)[colnames(gdp2)=="values"]<-"gdp_2"
 colnames(gdp2)[colnames(gdp2)=="geo"]<-"geo_2"
 
-##onto the joining, start with nuts 2 (gdp and pop)
+## 3.2 Join nuts 2 (gdp and pop)
 
-nuts_2<-inner_join(pop2,gdp2,by = c("time", "country","geo_2"))
+nuts_2 <- inner_join(pop2,gdp2,by = c("time", "country","geo_2"))
 
-#joining nuts 3 (gdp and pop)
-nuts_3<-inner_join(pop3,gdp3,by = c("time", "country","geo_3"))
+nuts_2 <- nuts_2[,c(2,4,1,3,5)]
 
-#joining nuts 2 & 3
+## 3.3 Join nuts 3 (gdp and pop)
+
+nuts_3 <- inner_join(pop3,gdp3,by = c("time", "country","geo_3"))
+
+nuts_3 <- nuts_3[,c(2,4,1,3,6,5)]
+
+## 3.4 Join nuts 2 and 3 
+
 df<-nuts_3 %>%
   mutate(geo_2=substr(geo_3, start = 1, stop = 4)) %>% #needed as join-id
   left_join(nuts_2, nuts_3, by = c("time","country","geo_2") )
 
 
-df<-df[,c(2,4,7,1,8,3,9,6,5)] # sort columns
-
-rm(gdp2,gdp3,pop2,pop3)
+df<-df[,c(1,2,7,3,8,4,9,5,6)] # sort columns
 
 
+
+#rm(gdp2,gdp3,pop2,pop3)
 #rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period)
+#rm(drop,GDP_Nuts3,Pop_Nuts3, measure, period,nonEU)
 
-n<-length(pop2$geo)
-k<-length(period)
+## 4. Further definitions (if needed later)
+
+#n_2<-length(pop2$geo_2)
+#k<-length(period)
+#Countries<-rownames(table(gdp2$country))
+#n_0<-length(Countries)
