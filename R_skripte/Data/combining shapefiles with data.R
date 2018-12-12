@@ -1,6 +1,6 @@
 
 library(dplyr)
-
+library(spdep)
 library(rgdal)
 
 ################ this part is already covered in data_download.R ###############
@@ -54,17 +54,25 @@ setdiff(shp2y$NUTS_ID, nuts_2$geo_2) # alright
 
 sum(duplicated(nuts_2$geo_2)) # weil in nuts_2 alle jahre sind
 
-# first only for one year (2013):
+
+######____________ first only for one year (2013): ____________________________
+
 nuts_2_13 <- nuts_2 %>% filter(time==2013)
 
 # merge data to shp:
 shp13 <- merge(shp2y, nuts_2_13, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='geo_2')
+coords <- coordinates(shp13)
 
+#----- k-nearest Matrix ------
 
+k.near <- knearneigh(coords, k=5)
+#indexing neighbors based on k=5
+k5 <- knn2nb(k.near)
+#creating neighborhood list based on the k(5) nearest neighbors
+W.list.k <- nb2listw(k5, style = 'W', zero.policy = F)
+#creating a weights-list
 
-
-
-
+plot(W.list.k, coords, add=T) # this shows us the problem of excluding so many countries. 
 
 
 
