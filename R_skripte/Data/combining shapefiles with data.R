@@ -3,65 +3,96 @@ library(dplyr)
 
 library(rgdal)
 
+################ this part is already covered in data_download.R ###############
 
-dir.create("data")
-
-
-
-temp <- tempfile(fileext = ".zip")
+#dir.create("data")
+#temp <- tempfile(fileext = ".zip")
 # download only when necessary, not every time you run the script because of the big
 # file size
 
 #download.file("http://ec.europa.eu/eurostat/cache/GISCO/distribution/v2/nuts/download/ref-nuts-2013-03m.shp.zip",temp)
 
-outDir<-"./data"
+#outDir<-"./Rdata/Shapefiles"
 # now unzip the boundary data
 #command from script doesnt work. alternative:
-zipF <- list.files(path = "./data", pattern = "*.zip", full.names = TRUE)
-sapply(zipF, function(x) unzip(x, exdir = outDir))
-file.remove(zipF)
+#zipF <- list.files(path = "./Rdata/Shapefiles", pattern = "*.zip", full.names = TRUE)
+#sapply(zipF, function(x) unzip(x, exdir = outDir))
+#file.remove(zipF)
+
+
+################# begin here: Shapefiles #####################################
 
 #read shapefiles
 # let us choose projection WGS 84 (EPSG 4326) which is visible the file name 
 # between the year (2013) and the level of the data (NUTS 2):
-shp2 <- readOGR(dsn = "./data", layer ="NUTS_RG_03M_2013_4326_LEVL_2") 
-shp3 <- readOGR(dsn = "./data", layer ="NUTS_RG_03M_2013_4326_LEVL_3") 
+shp2 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_2") 
+shp3 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_3") 
 
 #plot(shp2)
 #plot(shp3)
 
+overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
+# we can also exclude all oversea territories
+shp2 <- shp2[! shp2$NUTS_ID %in% overseas, ]
+shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
+
+# ich glaube wir brauchen im Endeffekt für die Analyse dann eh nur die shp2.
+# die einzige info bzgl nuts_3 regionen, die in die regressionen eingehen ist,
+# wie viele nuts3 in nuts2 regionen sind. der rest ist im CV abgebildet. aber
+# vorerst egal
+
+#_______________________________________________________________________________
+###### zum shp verständnis: ###################### 
+
+View(head(shp2@data))
+table(shp2$NUTS_ID %in% nuts_2$geo_2) # wir haben bereits 130 regionen aussortiert
+setdiff(shp2$NUTS_ID, nuts_2$geo_2) # this is the data which does not overlap in the shape file and the eurostat data
+# shp2 auf unser datenset reduzieren
+shp2y <- shp2[shp2$NUTS_ID %in% nuts_2$geo_2, ]
+# test
+setdiff(shp2y$NUTS_ID, nuts_2$geo_2) # alright
+
+sum(duplicated(nuts_2$geo_2)) # weil in nuts_2 alle jahre sind
+
+# first only for one year (2013):
+nuts_2_13 <- nuts_2 %>% filter(time==2013)
+
+# merge data to shp:
+shp13 <- merge(shp2y, nuts_2_13, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='geo_2')
+
+
+
+
+
+
+
+
+
+#shp2x <- merge(shp2, nuts_2, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "geo_2")
+#nuts_2x <-nuts_2 %>% group_by(time) %>% merge(., shp2, all.y = FALSE, all.x = TRUE, by.y = "NUTS_ID", by.x = "geo_2")
+
+
+
+
+#nuts_2 <- nuts_2 %>% filter(time==2010)
+
+#shp2x <- shp2[ shp$CNTR_CODE %in% com, ]
+
+#nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
+#drop<-c(nonEU,"DK","DE","FR","PL")
+
+
+#unique(shp2$CNTR_CODE)
+#unique(nuts_2$country)
+
+#com <-intersect(unique(shp2$CNTR_CODE),
+#          unique(nuts_2$country))
+
+
 #overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
+
 # we can also exclude all oversea territories
 #shp <- shp[! shp$NUTS_ID %in% overseas, ]
-
-
-shp2x <- merge(shp2, nuts_2, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "geo_2")
-
-
-nuts_2x <-nuts_2 %>% group_by(time) %>% merge(., shp2, all.y = FALSE, all.x = TRUE, by.y = "NUTS_ID", by.x = "geo_2")
-
-
-
-
-nuts_2 <- nuts_2 %>% filter(time==2010)
-
-shp2x <- shp2[ shp$CNTR_CODE %in% com, ]
-
-nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
-drop<-c(nonEU,"DK","DE","FR","PL")
-
-
-unique(shp2$CNTR_CODE)
-unique(nuts_2$country)
-
-com <-intersect(unique(shp2$CNTR_CODE),
-          unique(nuts_2$country))
-
-
-overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
-
-# we can also exclude all oversea territories
-shp <- shp[! shp$NUTS_ID %in% overseas, ]
 
 
 
