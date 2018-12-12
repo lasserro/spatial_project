@@ -74,6 +74,14 @@ W.list.k <- nb2listw(k5, style = 'W', zero.policy = F)
 
 plot(W.list.k, coords, add=T) # this shows us the problem of excluding so many countries. 
 
+#_________________________erster plot versuch __________________________________
+library(latticeExtra)
+grps <- 10
+brks <- quantile(shp13$gdp_2, 0:(grps-1)/(grps-1), na.rm=TRUE)
+p <- spplot(shp13, "gdp_2", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
+p + layer(sp.polygons(shp13))
+
+#_______________________________________________________________________________
 
 
 #shp2x <- merge(shp2, nuts_2, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "geo_2")
