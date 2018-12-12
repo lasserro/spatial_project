@@ -76,8 +76,8 @@ rownames(X_2)<-unique(df$geo_2)
 for (i in 1:k) {
   t<-nuts_2 %>%
     filter(time==sort(unique(df$time))[i]) %>%
-    select(pop_2)
-  X_2[,i] <- t$pop_2
+    select(freq)
+  X_2[,i] <- t$freq
 }
 
 
