@@ -1,6 +1,9 @@
 
 ############## Download ########################################################
 
+if(!exists("./RData")){dir.create("./RData")}
+
+
 ### GDP
 
 suppressWarnings(                                 

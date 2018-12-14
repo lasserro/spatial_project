@@ -65,7 +65,7 @@ for (i in 1:k) {
 }
 
 
-## 2.3 x_2 (ACHTUNG STIMMT NICHT, da gehört anzahl geo3 rein)
+## 2.3 x_2 (X_2 sollte jetzt stimmen)
 
 n <- length(unique(df$geo_2))
 k <- length(unique(df$time))
@@ -79,6 +79,11 @@ for (i in 1:k) {
     select(freq)
   X_2[,i] <- t$freq
 }
+
+# alternative - sum nuts3 regions
+# library(reshape2)
+# X_2 <- df %>% group_by(geo_2, time) %>% summarise(n_geo3 = length(geo_3))
+# X_2 <- acast(X_2, geo_2~time, value.var = "n_geo3")
 
 
 ### 3. Die Regression
