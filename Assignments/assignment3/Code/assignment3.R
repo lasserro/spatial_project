@@ -100,7 +100,7 @@ moran.mc(shp$growth, listw = W.list, alternative = "greater", nsim = 100)
 ######################## G) Choosing appropriate model ########################
 # From a theoretical point of view SDM would be the proper choice, since we do not have any biased estimates
 # if the true DGP is SAR or SEM. In contrast, if we choose SAR or SEM but the true DGP is SDM, we will suffer
-# from an omitted variable bias. SEM would suffer an additional bias as it do not account for the spatial lag in y.
+# from an omitted variable bias. SEM would suffer an additional bias as it does not account for the spatial lag in y.
 
 library(latticeExtra)
 f1 <- growth ~ pr80b + lninvb + lndens.empb
