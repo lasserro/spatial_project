@@ -97,17 +97,6 @@ moran.mc(shp$growth, listw = W.list, alternative = "greater", nsim = 100)
 # the results from Moran's I suggest that there is (most likely) spatial dependence (positive spatial autocorrelation)
 # in the dependent variable y --> OLS estimates are biased and inconsistent
 
-# # We can also check graphically if the OLS residuals appear to be randomly distributed in space
-# library(latticeExtra)
-# f1 <- growth ~ pr80b + lninvb + lndens.empb
-# OLS <- lm(f1, data=shp)
-# shp$resols <- residuals(OLS)
-# grps <- 10
-# brks <- quantile(shp$resols, 0:(grps-1)/(grps-1), na.rm=TRUE)
-# spplot(shp, "resols", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="black")
-# # the graph also indicates that the errors are not randomly distributed in space
-
-
 ######################## G) Choosing appropriate model ########################
 # From a theoretical point of view SDM would be the proper choice, since we do not have any biased estimates
 # if the true DGP is SAR or SEM. In contrast, if we choose SAR or SEM but the true DGP is SDM, we will suffer
