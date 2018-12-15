@@ -103,6 +103,7 @@ moran.mc(shp$growth, listw = W.list, alternative = "greater", nsim = 100)
 # from an omitted variable bias. SEM would suffer an additional bias as it does not account for the spatial lag in y.
 
 library(latticeExtra)
+library(RColorBrewer)
 f1 <- growth ~ pr80b + lninvb + lndens.empb
 durbin <- lagsarlm(formula = f1, listw = W.list, type="mixed", data=shp, tol.solve=1.0e-30)
 summary(durbin, correlation=FALSE)
@@ -111,8 +112,8 @@ shp$res.durb <- residuals(durbin)
 moran.mc(shp$res.durb, W.list, 999)
 
 grps <- 10
-brks <- quantile(shp$resdurbin, 0:(grps-1)/(grps-1), na.rm=TRUE)
-spplot(shp1, "resdurbin", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="black")
+brks <- quantile(shp$res.durb, 0:(grps-1)/(grps-1), na.rm=TRUE)
+spplot(shp, "res.durb", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="black")
 # residuals seems to be independent --> no spatial autocorrelation in the disturbance
 
 # alternative 
@@ -123,6 +124,7 @@ durbin.impacts2<-impacts(durbin, tr=trMat, R=100)
 summary(durbin.impacts2, zstats=TRUE, short=TRUE)
 
 # confidence intervals for direct, indirect and total effect
+library(coda)
 HPDinterval(durbin.impacts2, choice="direct")
 HPDinterval(durbin.impacts2, choice ="indirect")
 HPDinterval(durbin.impacts2, choice="total")
