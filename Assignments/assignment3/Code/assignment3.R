@@ -9,8 +9,8 @@
 # loading data in environment
 library(dplyr)
 library(stringr)
-setwd("./Assignments/assignment3")
-load("./Data/data1.rda")
+
+#load("./Data/data1.rda")
 df <- data1 %>% select(IDb,pr80b,pr103b,lninvb,lndens.empb) %>%
   filter(str_detect(IDb, paste(c("AT", "DE", "IT", "FR", "ES", "PT"), collapse = '|')))
 
