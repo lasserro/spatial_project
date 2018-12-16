@@ -88,18 +88,17 @@ for (i in 1:k) {
   names(lm)[i] <- paste("lm_", period[i], sep = "")
 }
 
-names(lm)[i]
-names(lm[1]$coefficients)
+#names(lm)[i]
+#names(lm[1]$coefficients)
 
-lm
-
-
-<- 
-  lm(Y[,1] ~ X_1[,1] + I(X_1[,1]^2) + X_2[,2])
+#lm
 
 
+#<- lm(Y[,1] ~ X_1[,1] + I(X_1[,1]^2) + X_2[,2])
 
-names(fit$coefficients) <- c('bob','sally','sue'
+
+
+#names(fit$coefficients) <- c('bob','sally','sue'
 
 ## 3.1 How to access stuff:
 
