@@ -1,4 +1,13 @@
 To Dos:
+0: Anmerkung zum ERD datafile. Die aktuelle Fassung (16.12) hat 
+  - vollständige Daten von 1995:2015 (dehalb wird das paper auch die verwendet haben)
+  - zusätzlich NORWEGEN drin (weils halt da is)
+  - es fehlen alle nuts3 die gleich sind wie nuts 2 und alle nuts 2 die gleich sind wie nuts 1
+  - deshalb fehlen ZYPERN und LUXEMBURG ganz
+  - 6 Regionen in Deutschland_3 sind falsch benannt, check it!
+  - müssen die Daten generell mal druchsschaun, ob die Transformation da nix zerstört haben
+
+Die Daten sind da, aber wir kriegen sie mit dem aktuellen code nicht rein. 
   
 1: warum gibts die komischen number of obs changes?
   #The changes are:
