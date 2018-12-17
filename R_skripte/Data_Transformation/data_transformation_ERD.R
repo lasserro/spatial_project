@@ -7,6 +7,7 @@ if(min==0){
   drop<-c()
   ## the time frame
   period<-c(1980:2015)
+  overseas <- c()
   # müssen wahrscheinlich 2016, wenn nicht auch 2015 droppen.
   ##############################################################
 }
@@ -15,6 +16,8 @@ if(min==1){
   #nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
   drop<-c("NO")
   period<-c(1995:2015)
+  overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
+  
   ############################################################## 
 } 
 
@@ -26,10 +29,10 @@ if(min==1){
 charcols <- c("nuts_level", "country", "nuts_2", "nuts_code")
 
 POP_ERD <- POP_ERD %>% select(charcols, paste(period)) %>%
-  filter(!country %in% drop)
+  filter(!country %in% drop | !nuts_2 %in% overseas) 
 
 GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
-  filter(!country %in% drop)
+  filter(!country %in% drop | !nuts_2 %in% overseas)
 
 ############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
 # nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
