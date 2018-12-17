@@ -6,6 +6,7 @@
 library(eurostat)
 library(dplyr)
 library(rgdal)
+library(spdep)
 
 ### Data collection
 
