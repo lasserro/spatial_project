@@ -25,16 +25,16 @@ library(rgdal)
 #read shapefiles
 # let us choose projection WGS 84 (EPSG 4326) which is visible the file name 
 # between the year (2013) and the level of the data (NUTS 2):
-shp2 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_2") 
-shp3 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_3") 
+# shp2 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_2") 
+# shp3 <- readOGR(dsn = "./RData/Shapefiles", layer ="NUTS_RG_03M_2013_4326_LEVL_3") 
 
 #plot(shp2)
 #plot(shp3)
 
-overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
-# we can also exclude all oversea territories
-shp2 <- shp2[! shp2$NUTS_ID %in% overseas, ]
-shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
+# overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
+# # we can also exclude all oversea territories
+# shp2 <- shp2[! shp2$NUTS_ID %in% overseas, ]
+# shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
 
 # ich glaube wir brauchen im Endeffekt für die Analyse dann eh nur die shp2.
 # die einzige info bzgl nuts_3 regionen, die in die regressionen eingehen ist,
@@ -45,14 +45,13 @@ shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
 ###### zum shp verständnis: ###################### 
 
 View(head(shp2@data))
-table(shp2$NUTS_ID %in% nuts_2$geo_2) # wir haben bereits 130 regionen aussortiert
-setdiff(shp2$NUTS_ID, nuts_2$geo_2) # this is the data which does not overlap in the shape file and the eurostat data
-# shp2 auf unser datenset reduzieren
-shp2y <- shp2[shp2$NUTS_ID %in% nuts_2$geo_2, ]
+table(shp2$NUTS_ID %in% pop2$nuts_2) # shp file has 44 more nuts2 regions
+setdiff(shp2$NUTS_ID, pop2$nuts_2) # this is the data which does not overlap in 
+# the shape file and the data shp2 auf unser datenset reduzieren
+shp2 <- shp2[shp2$NUTS_ID %in% pop2$nuts_2, ]
 # test
-setdiff(shp2y$NUTS_ID, nuts_2$geo_2) # alright
-
-sum(duplicated(nuts_2$geo_2)) # weil in nuts_2 alle jahre sind
+setdiff(shp2$NUTS_ID, pop2$nuts_2) # alright
+ 
 
 
 ######____________ first only for one year (2013): ____________________________
@@ -60,7 +59,7 @@ sum(duplicated(nuts_2$geo_2)) # weil in nuts_2 alle jahre sind
 nuts_2_13 <- nuts_2 %>% filter(time==2013)
 
 # merge data to shp:
-shp13 <- merge(shp2y, nuts_2_13, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='geo_2')
+shp13 <- merge(shp2, nuts_2_13, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='geo_2')
 coords <- coordinates(shp13)
 
 #----- k-nearest Matrix ------
