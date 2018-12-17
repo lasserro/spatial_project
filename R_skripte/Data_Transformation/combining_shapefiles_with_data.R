@@ -58,6 +58,10 @@ setdiff(shp2$NUTS_ID, pop2$nuts_2) # alright
 
 # merge data to shp:
 shp13 <- merge(shp2, pop2[,c('nuts_2','2013')], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+colnames(shp13@data)[6] <- 'Pop_2013'
+shp13 <- merge(shp13, gdp2[,c('nuts_2','2013')], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+colnames(shp13@data)[7] <- 'Gdp_2013'
+
 coords <- coordinates(shp13)
 
 #----- k-nearest Matrix ------
@@ -75,8 +79,8 @@ plot(W.list.k, coords, add=T) # this shows us the problem of excluding so many c
 # funktioniert nicht mehr. keine ahnung why
 library(latticeExtra)
 grps <- 10
-brks <- quantile(shp13$'2013', 0:(grps-1)/(grps-1), na.rm=TRUE)
-p <- spplot(shp13, "2013", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
+brks <- quantile(shp13$'Gdp_2013', 0:(grps-1)/(grps-1), na.rm=TRUE)
+p <- spplot(shp13, "Gdp_2013", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
 p + layer(sp.polygons(shp13))
 
 #_______________________________________________________________________________
