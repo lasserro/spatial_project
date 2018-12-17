@@ -14,8 +14,8 @@ GDP_ERD <-read.table("./RData/NUTS3 GDP ERD fix.txt",
                      stringsAsFactors = FALSE,
                      check.names=F,
                      colClasses=c("character", "character",
-                                  rep("numeric", length(1980:2015)))
-)
+                                  rep("numeric", length(1980:2015))))
+
 
 colnames(GDP_ERD)[1:2] <- c("nuts_level", "nuts_code")
 GDP_ERD[GDP_ERD == "nuts 0"]<-0
@@ -41,8 +41,8 @@ POP_ERD <-read.table("./RData/NUTS3 Population ERD fix.txt",
                      stringsAsFactors = FALSE,
                      check.names=F,
                      colClasses=c("character", "character",
-                                  rep("numeric", length(1980:2015)))
-)
+                                  rep("numeric", length(1980:2015))))
+
 colnames(POP_ERD)[1:2] <- c("nuts_level", "nuts_code")
 POP_ERD[POP_ERD == "nuts 0"]<-0
 POP_ERD[POP_ERD == "nuts 1"]<-1
