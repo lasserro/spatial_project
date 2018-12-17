@@ -33,8 +33,8 @@ library(rgdal)
 
 # overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
 # # we can also exclude all oversea territories
-# shp2 <- shp2[! shp2$NUTS_ID %in% overseas, ]
-# shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
+shp2 <- shp2[! shp2$NUTS_ID %in% overseas, ]
+shp3 <- shp3[! shp3$NUTS_ID %in% overseas, ]
 
 # ich glaube wir brauchen im Endeffekt für die Analyse dann eh nur die shp2.
 # die einzige info bzgl nuts_3 regionen, die in die regressionen eingehen ist,
@@ -56,10 +56,8 @@ setdiff(shp2$NUTS_ID, pop2$nuts_2) # alright
 
 ######____________ first only for one year (2013): ____________________________
 
-nuts_2_13 <- nuts_2 %>% filter(time==2013)
-
 # merge data to shp:
-shp13 <- merge(shp2, nuts_2_13, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='geo_2')
+shp13 <- merge(shp2, pop2[,c('nuts_2','2013')], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
 coords <- coordinates(shp13)
 
 #----- k-nearest Matrix ------
@@ -74,10 +72,11 @@ W.list.k <- nb2listw(k5, style = 'W', zero.policy = F)
 plot(W.list.k, coords, add=T) # this shows us the problem of excluding so many countries. 
 
 #_________________________erster plot versuch __________________________________
+# funktioniert nicht mehr. keine ahnung why
 library(latticeExtra)
 grps <- 10
-brks <- quantile(shp13$gdp_2, 0:(grps-1)/(grps-1), na.rm=TRUE)
-p <- spplot(shp13, "gdp_2", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
+brks <- quantile(shp13$'2013', 0:(grps-1)/(grps-1), na.rm=TRUE)
+p <- spplot(shp13, "2013", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
 p + layer(sp.polygons(shp13))
 
 #_______________________________________________________________________________
