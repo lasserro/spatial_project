@@ -21,7 +21,7 @@ source("./R_skripte/Data_Transformation/data_download ERD.R") #European Regional
 min<-1
 
 # source("./R_skripte/Data/data_transformation.R")   #EUROSTAT
-source("./R_skripte/Data/data_transformation_ERD.R") #ERD
+source("./R_skripte/Data_Transformation/data_transformation_ERD.R") #ERD
 
 ### Linear Regression
 
