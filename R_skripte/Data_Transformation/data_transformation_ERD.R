@@ -34,6 +34,10 @@ GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
 ############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
 # nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
 
+# Auf diese 6 kann gut verzichtet werden. Das sind einerseits die komischen
+# Nuts_codes, die nur aus Zahlen bestehen und andererseits 'extra-regios'
+# aus Deutschland, die sowieso NA's sind
+
 GDP_ERD <- GDP_ERD %>%
   filter(!nuts_code %in% setdiff(GDP_ERD$nuts_code,POP_ERD$nuts_code))
 POP_ERD <- POP_ERD %>%
@@ -60,7 +64,8 @@ nuts_2013 <- read.table("./RData/NUTS2013 all.csv",
 
 colnames(nuts_2013) <- "code2013"
 
-# get rid of all (useless) z, zz, zzz. NO IDEA what those are...
+# get rid of all (useless) z, zz, zzz. NO IDEA what those are... -> same as we 
+# kicked out in the previous section...
 
 nuts_2013 <- nuts_2013 %>% mutate (zzzz = substring(code2013,3)) %>%
   filter(!zzzz %in% "Z",
@@ -75,6 +80,10 @@ nuts_2013 <- nuts_2013 %>% mutate (zzzz = substring(code2013,3)) %>%
 GDP_ERD <- left_join(nuts_2013,GDP_ERD, by = c("code2013" = "nuts_code"))
 
 # and fill in missing values accordingly
+
+# hier wäre der ideale Punkt um Später diese nuts2=nuts3 werte in national averages
+# zu transformieren...
+
 
 for (i in 1:length(GDP_ERD$code2013)) {
   
