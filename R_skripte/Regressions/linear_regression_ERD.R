@@ -72,13 +72,18 @@ rownames(X_1)<-unique(pop2$nuts_2)
 
 ## 2.3 x_2
 
-X_2 <- POP_ERD %>%
+X_2<- POP_ERD %>%
   filter(nuts_level == 3) %>%
   group_by(nuts_2) %>% 
   summarise(freq=n())
 
 X_2 <- as.matrix(X_2)
 rownames(X_2)<-unique(pop2$nuts_2)
+
+# X_2 <- X_2[,2]
+# X_2.1 <-matrix(X_2,n_2,k)
+# colnames(X_2.1)<-period
+# rownames(X_2.1)<-unique(pop2$nuts_2)
 
 ### 3. Die Regression
 
