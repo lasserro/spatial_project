@@ -75,10 +75,11 @@ rownames(X_1)<-unique(pop2$nuts_2)
 X_2<- POP_ERD %>%
   filter(nuts_level == 3) %>%
   group_by(nuts_2) %>% 
-  summarise(freq=n())
+  summarise(count=n())
 
-X_2 <- as.matrix(X_2)
+X_2 <- data.matrix(X_2)[,2]
 rownames(X_2)<-unique(pop2$nuts_2)
+
 
 # X_2 <- X_2[,2]
 # X_2.1 <-matrix(X_2,n_2,k)
@@ -87,7 +88,7 @@ rownames(X_2)<-unique(pop2$nuts_2)
 
 ### 3. Die Regression
 
-lm <- lapply(1:k, function(i) lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,2]))
+lm <- lapply(1:k, function(i) lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2))
 
 for (i in 1:k) {
   names(lm)[i] <- paste("lm_", period[i], sep = "")
