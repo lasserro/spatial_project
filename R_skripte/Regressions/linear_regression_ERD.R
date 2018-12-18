@@ -64,6 +64,9 @@ Y[i,j] <- CV2(gdp_2, gdp_3, pop_2, pop_3)
 
 rm(gdp_2, gdp_3, pop_2, pop_3)
 
+# extract CV_2013 from Y for shp13:
+Y13 <- as.data.frame(Y[,'2013'])
+Y13$nuts_2 <- rownames(Y13)
 
 ## 2.2 x_1
 
