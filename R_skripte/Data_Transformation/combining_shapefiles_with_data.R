@@ -79,8 +79,8 @@ plot(W.list.k, coords, add=T) # this shows us the problem of excluding so many c
 # funktioniert nicht mehr. keine ahnung why
 library(latticeExtra)
 grps <- 10
-brks <- quantile(shp13$'Gdp_2013', 0:(grps-1)/(grps-1), na.rm=TRUE)
-p <- spplot(shp13, "Gdp_2013", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
+brks <- quantile(shp13$'gdp_2', 0:(grps-1)/(grps-1), na.rm=TRUE)
+p <- spplot(shp13, "gdp_2", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
 p + layer(sp.polygons(shp13))
 
 #_______________________________________________________________________________
