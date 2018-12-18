@@ -28,3 +28,6 @@ source("./R_skripte/Data_Transformation/data_transformation_ERD.R") #ERD
 
 # source("./R_skripte/Regressions/linear_regression.R")   #EUROSTAT
 source("./R_skripte/Regressions/linear_regression_ERD.R") #ERD
+
+### Combining Data with Shapefile (2013)
+source("./R_skripte/Data_Transformation/combining_shapefiles_with_dataD.R")
