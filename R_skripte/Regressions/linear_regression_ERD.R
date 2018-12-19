@@ -95,7 +95,9 @@ lm <- lapply(1:k, function(i) lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,2]))
 
 for (i in 1:k) {
   names(lm)[i] <- paste("lm_", period[i], sep = "")
+  names(lm[[1]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
 }
+
 
 #names(lm)[i]
 #names(lm[1]$coefficients)
