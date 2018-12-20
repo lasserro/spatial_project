@@ -36,6 +36,13 @@ GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
   filter(!country %in% drop ) %>%
   filter(!nuts_2 %in% overseas)
 
+# this is added for the exact replica
+if(min==2){
+  POP_ERD <- POP_ERD %>% filter(country %in% orgctr) 
+  
+  GDP_ERD <- GDP_ERD %>% filter(country %in% orgctr)
+  }
+
 ############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
 # nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
 
