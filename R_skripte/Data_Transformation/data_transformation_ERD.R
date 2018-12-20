@@ -150,11 +150,6 @@ gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 #         nuts_level == 3
 #         )
 
-## 2.3 Define stuff for later use
-
-n_0 <- length(table(pop2$country))
-n_2 <- length(table(pop2$nuts_2))
-k <- length(period)
 
 rm(charcols)
 
@@ -165,6 +160,11 @@ gdp2 <- gdp2 %>% filter(! nuts_2 %in% overseas)
 gdp3 <- gdp3 %>% filter(! nuts_2 %in% overseas)
 
 
+## 2.3 Define stuff for later use
+
+n_0 <- length(table(pop2$country))
+n_2 <- length(table(pop2$nuts_2))
+k <- length(period)
 
 
 
