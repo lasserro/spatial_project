@@ -157,3 +157,14 @@ n_2 <- length(table(pop2$nuts_2))
 k <- length(period)
 
 rm(charcols)
+
+###### kick 4 regions
+pop2 <- pop2 %>% filter(! nuts_2 %in% overseas)
+pop3 <- pop3 %>% filter(! nuts_2 %in% overseas)
+gdp2 <- gdp2 %>% filter(! nuts_2 %in% overseas)
+gdp3 <- gdp3 %>% filter(! nuts_2 %in% overseas)
+
+
+
+
+

@@ -77,8 +77,9 @@ rownames(X_1)<-unique(pop2$nuts_2)
 
 X_2<- POP_ERD %>%
   filter(nuts_level == 3) %>%
+  filter(!nuts_2 %in% overseas) %>%
   group_by(nuts_2) %>% 
-  summarise(count=n())
+  summarise(count=n()) 
 
 X_2 <- data.matrix(X_2)
 rownames(X_2)<-unique(pop2$nuts_2)
