@@ -52,11 +52,7 @@ POP_ERD <- POP_ERD %>%
   filter(!nuts_code %in% setdiff(POP_ERD$nuts_code,GDP_ERD$nuts_code))
 
 #############################################################################
-<<<<<<< HEAD
 ########Achtung, an diesem Punkt haben wir NAs für Kroatien 1995 (Krieg) drop?
-=======
-########Achtung, an diesem Punkt haben wir NAs für Ungarn
->>>>>>> 9bb9db2ea21cd040fd0df4bcbbed36200ce9a1fb
 #############################################################################
 
 ## 2.02 Fill in neglected regions 
