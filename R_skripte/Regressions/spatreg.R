@@ -1,4 +1,29 @@
 ### Spatial lag model
+library(plm)
+library(reshape2)
+X_1.long <- melt(X_1)
+colnames(X_1.long) <- c("nuts_2", "time", "x_1")
+
+df <- matrix(NA, n_2, k)
+df[,seq(1:k)] <- X_2[,2]
+colnames(df) <- period
+rownames(df) <- pop2$nuts_2
+
+X_2.long <- melt(df)
+colnames(X_2.long) <- c("nuts_2", "time", "x_2")
+
+Y.long <- melt(Y)
+colnames(Y.long) <- c("nuts_2", "time", "y")
+
+data.long <- cbind(Y.long, X_1.long[,3], X_2.long[,3])
+colnames(data.long) <- c("nuts_2", "time", "y", "x_1", "x_2")
+
+f1 <- y ~ x_1 + I(x_1^2) + x_2
+splm(formula = f1, data = data.long, index = time, listw = W.list.k)
+
+
+
+
 
 Y <- as.data.frame(Y)           
 
