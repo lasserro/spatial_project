@@ -29,23 +29,30 @@ if(min==1){
 charcols <- c("nuts_level", "country", "nuts_2", "nuts_code")
 
 POP_ERD <- POP_ERD %>% select(charcols, paste(period)) %>%
-  filter(!country %in% drop)  %>% filter(!nuts_2 %in% overseas) 
+  filter(!country %in% drop)  %>%
+  filter(!nuts_2 %in% overseas) 
 
 GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
-  filter(!country %in% drop ) %>% filter(!nuts_2 %in% overseas)
+  filter(!country %in% drop ) %>%
+  filter(!nuts_2 %in% overseas)
 
 ############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
 # nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
 
 # Auf diese 6 kann gut verzichtet werden. Das sind einerseits die komischen
 # Nuts_codes, die nur aus Zahlen bestehen und andererseits 'extra-regios'
-# aus Deutschland, die sowieso NA's sind
+# aus Deutschland, die sowieso NA's sind 
+
+# NA sind sie nicht. und das sind ca 1 mio Menschen,
+# wär schon interessant was das is
 
 GDP_ERD <- GDP_ERD %>%
   filter(!nuts_code %in% setdiff(GDP_ERD$nuts_code,POP_ERD$nuts_code))
 POP_ERD <- POP_ERD %>%
   filter(!nuts_code %in% setdiff(POP_ERD$nuts_code,GDP_ERD$nuts_code))
 
+#############################################################################
+########Achtung, an diesem Punkt haben wir NAs für Ungarn
 #############################################################################
 
 ## 2.02 Fill in neglected regions 
@@ -149,3 +156,4 @@ n_0 <- length(table(pop2$country))
 n_2 <- length(table(pop2$nuts_2))
 k <- length(period)
 
+rm(charcols)
