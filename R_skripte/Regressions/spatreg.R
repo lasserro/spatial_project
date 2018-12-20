@@ -1,0 +1,72 @@
+### Spatial lag model
+
+Y <- as.data.frame(Y)           
+
+Y <- Y %>% mutate(nuts = row.names(Y))
+
+shp2 <- shp2[shp2$NUTS_ID %in% Y$nuts, ]
+
+shp <- merge(shp2, Y, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "nuts")
+
+
+coords <- coordinates(shp)
+
+k.near <- knearneigh(coords, k=5) #indexing neighbors based on k=5
+k5 <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
+W.list.k <- nb2listw(k5, style = "W", zero.policy = FALSE) #creating a weights-list
+W.mat <- listw2mat(W.list.k) #creates a weigths matrix
+
+
+k1 <- knearneigh(coords, k=1) #indexing everyones closest neighbor
+k1 <- knn2nb(k1) #transforming it into a neighborhood list
+link.max <- max(unlist(nbdists(k1, coords=coords))) #choose maximal distance
+link.max #printing max distance between neighbors
+
+
+
+lm <- lapply(1:k, function(i) lm(Y[,i] ~ X_1[,i] + I(X_1[,i]^2) + X_2[,2]))
+
+for (i in 1:k) {
+  names(lm)[i] <- paste("lm_", period[i], sep = "")
+  names(lm[[1]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
+}
+
+
+Y <- as.data.frame(Y)           
+
+Y <- Y %>% mutate(nuts = row.names(Y))
+
+
+###############################################
+
+y <- Y$"1996"
+
+X12 <- X_1[,2]^2
+X1 <- X_1[,2]
+X2<-X_2[,2]
+X0 <- rep(1,272)
+
+X <- as.matrix(cbind(int=1,X1,X2,X12))
+
+XX <- t(X) %*% X
+
+XXi <- solve(XX)
+
+beta <- solve(XX) %*% t(X) %*% y
+
+
+
+#################### F) Testing for spatial autocorrelation ####################
+# residuals
+res <- y - X %*% beta
+
+## Morans I
+# calculating Morans I manually
+y.mean <- mean(y)
+MI.y.num <- (y - y.mean) %*% W.mat %*% (y - y.mean)
+MI.y.den <- (y - y.mean) %*% (y - y.mean)
+MI.y <- MI.y.num / MI.y.den
+MI.y
+
+# calculating Morans I with formula
+moran.mc(shp$"1996", listw = W.list.k, alternative = "greater", nsim = 1000)
