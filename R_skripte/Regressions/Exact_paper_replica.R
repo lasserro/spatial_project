@@ -17,7 +17,8 @@ min<-2
   drop<-c("NO","MT","CY")
   period<-c(1995:2008)
   overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
-  
+  #original paper:
+  orgctr <- c("BE","DK","DE","EL","ES","FR","IE","IT","NL","LU","AT","PT","FI","SE","UK","CZ","HU","PL","SK","EE","LT","LV","SI","BG","RO")
   ############################################################# 
 
 source("./R_skripte/Data_Transformation/data_transformation_ERD.R") #ERD

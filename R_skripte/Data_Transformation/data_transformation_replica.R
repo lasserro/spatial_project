@@ -35,6 +35,14 @@ POP_ERD <- POP_ERD %>% select(charcols, paste(period)) %>%
 GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
   filter(!country %in% drop ) %>%
   filter(!nuts_2 %in% overseas)
+<<<<<<< HEAD
+
+# this is added for the exact replica
+if(replica==2){
+  POP_ERD <- POP_ERD %>% filter(country %in% orgctr) 
+  
+  GDP_ERD <- GDP_ERD %>% filter(country %in% orgctr)
+  }
 
 ############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
 # nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
@@ -52,7 +60,11 @@ POP_ERD <- POP_ERD %>%
   filter(!nuts_code %in% setdiff(POP_ERD$nuts_code,GDP_ERD$nuts_code))
 
 #############################################################################
+<<<<<<< HEAD
 ########Achtung, an diesem Punkt haben wir NAs für Kroatien 1995 (Krieg) drop?
+=======
+########Achtung, an diesem Punkt haben wir NAs für Ungarn
+>>>>>>> 9bb9db2ea21cd040fd0df4bcbbed36200ce9a1fb
 #############################################################################
 
 ## 2.02 Fill in neglected regions 
@@ -150,21 +162,10 @@ gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 #         nuts_level == 3
 #         )
 
-
-rm(charcols)
-
-###### kick 4 regions
-pop2 <- pop2 %>% filter(! nuts_2 %in% overseas)
-pop3 <- pop3 %>% filter(! nuts_2 %in% overseas)
-gdp2 <- gdp2 %>% filter(! nuts_2 %in% overseas)
-gdp3 <- gdp3 %>% filter(! nuts_2 %in% overseas)
-
-
 ## 2.3 Define stuff for later use
 
 n_0 <- length(table(pop2$country))
 n_2 <- length(table(pop2$nuts_2))
 k <- length(period)
 
-
-
+rm(charcols)
