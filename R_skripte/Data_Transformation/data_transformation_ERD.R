@@ -1,5 +1,13 @@
 ### 1. Definitions
 
+#In the following we have two specifications for the dataset, first a maximal set, 
+# with all countries and periods which we used to assess which ones we will keep in the end. 
+# The min-specification which we ended up using later on includes all countries from 
+# the ERD, with few exceptions: 
+#--Malta, Cyprys: stastical reasons (Nuts 2 = Nuts 3 = Nuts 1)
+#--Norway, (we concentrate on EU)
+#--CHECK
+
 if(min==0){
   ############################## DEFINE ########################
   ## Which countries to drop
@@ -24,7 +32,7 @@ if(min==1){
 ### 2. The Transformation
 
 
-## 2.01 Go home Norway, Go home NAs
+## 2.01 Crop dataset to specification above
 
 charcols <- c("nuts_level", "country", "nuts_2", "nuts_code")
 
@@ -36,15 +44,8 @@ GDP_ERD <- GDP_ERD %>% select(charcols, paste(period)) %>%
   filter(!country %in% drop ) %>%
   filter(!nuts_2 %in% overseas)
 
-############# ACHUTNG, der folgende code schmeisst NUTS 3 regionen raus, die 
-# nicht in pop3 und gdp3 übereinstimmen (vom namen her), das betrifft 6 Stück.
-
-# Auf diese 6 kann gut verzichtet werden. Das sind einerseits die komischen
-# Nuts_codes, die nur aus Zahlen bestehen und andererseits 'extra-regios'
-# aus Deutschland, die sowieso NA's sind 
-
-# NA sind sie nicht. und das sind ca 1 mio Menschen,
-# wär schon interessant was das is
+## At this point, our datasets for population and GDP include same regions except 
+# for 6 regions in Germany which are being dropped in the following code.
 
 GDP_ERD <- GDP_ERD %>%
   filter(!nuts_code %in% setdiff(GDP_ERD$nuts_code,POP_ERD$nuts_code))
@@ -58,8 +59,12 @@ POP_ERD <- POP_ERD %>%
 ## 2.02 Fill in neglected regions 
 
 # The ERD leaves out regions if the nuts level above is the same.
-# (e.g. AT13 & AT130 ). This takes the official NUTS 2013 classification and 
+# (e.g. with AT13 & AT130, AT130 is not included).This nonsensical approach forces 
+# to use a little hack: This takes the official NUTS 2013 classification and 
 # fills in the missing values.
+# 1. Join the datasets with the official NUTS specification
+# 2. This creates missing values for all neglected regions in the ERD-database
+# 3. Fill missing values with the regions that are a level above.
 
 
 # get the official nuts 2013 classification
@@ -74,17 +79,17 @@ nuts_2013 <- read.table("./RData/NUTS2013 all.csv",
 
 colnames(nuts_2013) <- "code2013"
 
-# get rid of all (useless) z, zz, zzz. NO IDEA what those are... -> same as we 
-# kicked out in the previous section...
+# get rid of all (useless) z, zz, zzz. These are extraregions not included in 
+# the ERD
 
-nuts_2013 <- nuts_2013 %>% mutate (zzzz = substring(code2013,3)) %>%
-  filter(!zzzz %in% "Z",
-         !zzzz %in% "ZZ",
-         !zzzz %in% "ZZZ"
+nuts_2013 <- nuts_2013 %>% mutate (extra = substring(code2013,3)) %>%
+  filter(!extra %in% "Z",
+         !extra %in% "ZZ",
+         !extra %in% "ZZZ"
   ) %>% 
-  select(-zzzz)
+  select(-extra)
 
-# add the wishlist to the actual dataframe
+# add this "wishlist" to the actual dataframe
 # GDP
 
 GDP_ERD <- left_join(nuts_2013,GDP_ERD, by = c("code2013" = "nuts_code"))
