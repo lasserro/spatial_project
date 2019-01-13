@@ -1,6 +1,7 @@
 ### Spatial lag model
 library(plm)
 library(reshape2)
+library(splm)
 X_1.long <- melt(X_1)
 colnames(X_1.long) <- c("nuts_2", "time", "x_1")
 
@@ -18,9 +19,17 @@ colnames(Y.long) <- c("nuts_2", "time", "y")
 data.long <- cbind(Y.long, X_1.long[,3], X_2.long[,3])
 colnames(data.long) <- c("nuts_2", "time", "y", "x_1", "x_2")
 
-f1 <- y ~ x_1 + I(x_1^2) + x_2
-splm(formula = f1, data = data.long, index = time, listw = W.list.k)
+## Weight Matrix
+coords <- coordinates(shp2)
 
+k.near <- knearneigh(coords, k=5) #indexing neighbors based on k=5
+k5 <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
+W.list.k <- nb2listw(k5, style = "W", zero.policy = FALSE) #creating a weights-list
+W.mat <- listw2mat(W.list.k) #creates a weigths matrix
+
+f1 <- y ~ x_1 + I((x_1)^2) + x_2
+spml(f1, data = data.long, listw = W.list.k,
+     model="random")
 
 
 
@@ -32,14 +41,6 @@ Y <- Y %>% mutate(nuts = row.names(Y))
 shp2 <- shp2[shp2$NUTS_ID %in% Y$nuts, ]
 
 shp <- merge(shp2, Y, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "nuts")
-
-
-coords <- coordinates(shp)
-
-k.near <- knearneigh(coords, k=5) #indexing neighbors based on k=5
-k5 <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
-W.list.k <- nb2listw(k5, style = "W", zero.policy = FALSE) #creating a weights-list
-W.mat <- listw2mat(W.list.k) #creates a weigths matrix
 
 
 k1 <- knearneigh(coords, k=1) #indexing everyones closest neighbor
