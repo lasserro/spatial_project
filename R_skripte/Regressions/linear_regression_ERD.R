@@ -62,6 +62,18 @@ Y[i,j] <- CV2(gdp_2, gdp_3, pop_2, pop_3)
 
 }}
 
+# If Nuts 2 == Nuts 3, the CV is 0.
+# we use the same approach as the paper and substitute with the national average
+
+for (i in 1:length(Y[,1])) {
+  
+  if(Y[i,3] == 0){
+    for (j in 1:length(Y[1,])) {
+      Y[i,j] <- mean(Y[substr(rownames(Y),1,2)==substr(rownames(Y)[i],1,2),j])      
+    }
+  }
+}
+
 rm(gdp_2, gdp_3, pop_2, pop_3)
 
 # extract CV_2013 from Y for shp13:
