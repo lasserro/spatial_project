@@ -28,7 +28,7 @@ GDP_ERD <- GDP_ERD %>% mutate(country=substr(nuts_code, start = 1, stop = 2))
 GDP_ERD <- GDP_ERD %>% mutate(nuts_2=substr(nuts_code, start = 1, stop = 4))
 
 GDP_ERD <- GDP_ERD[,c(1,39,40,2,3:38)]
-GDP_ERD[,-(1:4)] <- GDP_ERD[,-(1:4)]*1e+9
+#GDP_ERD[,-(1:4)] <- GDP_ERD[,-(1:4)]*1e+9
 #GDP_ERD[GDP_ERD == ".NaN"] <-NA
 
 ### Population
@@ -56,7 +56,7 @@ POP_ERD <- POP_ERD %>% mutate(nuts_2=substr(nuts_code, start = 1, stop = 4))
 POP_ERD <- POP_ERD[,c(1,39,40,2,3:38)]
 #POP_ERD[POP_ERD == ".NaN"] <-NA
 #POP_ERD[,-2,POP_ERD != NA] <- POP_ERD[,-2, POP_ERD != NA]*1000
-POP_ERD[,-(1:4)] <- POP_ERD[,-(1:4)]*1000
+#POP_ERD[,-(1:4)] <- POP_ERD[,-(1:4)]*1000
 ### Shapefiles
 
 suppressWarnings(                                 
