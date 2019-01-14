@@ -81,16 +81,19 @@ colnames(nuts_2013) <- "code2013"
 
 # get rid of all (useless) z, zz, zzz. These are extraregions not included in 
 # the ERD
+#and remove overseas 
 
 nuts_2013 <- nuts_2013 %>% mutate (extra = substring(code2013,3)) %>%
   filter(!extra %in% "Z",
          !extra %in% "ZZ",
-         !extra %in% "ZZZ"
+         !extra %in% "ZZZ",
+         !substr(code2013, start = 1, stop = 4) %in% overseas
   ) %>% 
   select(-extra)
 
 # add this "wishlist" to the actual dataframe
-# GDP
+
+## GDP
 
 GDP_ERD <- left_join(nuts_2013,GDP_ERD, by = c("code2013" = "nuts_code"))
 
@@ -124,8 +127,6 @@ for (i in 1:length(POP_ERD$code2013)) {
   }
 }
 
-rm(nuts_2013)
-
 ## 2.1 Single dataframes for gdp,pop on level 2 & 3
 
 
@@ -156,20 +157,15 @@ gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 #         )
 
 
-rm(charcols)
-
-###### kick 4 regions
-pop2 <- pop2 %>% filter(! nuts_2 %in% overseas)
-pop3 <- pop3 %>% filter(! nuts_2 %in% overseas)
-gdp2 <- gdp2 %>% filter(! nuts_2 %in% overseas)
-gdp3 <- gdp3 %>% filter(! nuts_2 %in% overseas)
 
 
 ## 2.3 Define stuff for later use
 
-n_0 <- length(table(pop2$country))
-n_2 <- length(table(pop2$nuts_2))
-k <- length(period)
+#n_0 <- length(table(pop2$country))
+#n_2 <- length(table(pop2$nuts_2))
+#k <- length(period)
 
+
+rm(nuts_2013,charcols)
 
 
