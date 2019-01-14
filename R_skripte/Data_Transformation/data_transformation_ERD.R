@@ -156,9 +156,6 @@ gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 #         nuts_level == 3
 #         )
 
-
-
-
 ## 2.3 Define stuff for later use
 
 #n_0 <- length(table(pop2$country))
