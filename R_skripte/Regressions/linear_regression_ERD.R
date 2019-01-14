@@ -1,4 +1,10 @@
 # Das ist die lineare Regression, Seite 300. 
+#Define:
+#number of Nuts_2 regions in dataset:
+n_2 <- length(table(pop2$nuts_2))
+#number of observed years: 
+k <- length(period)
+
 
 ### 1. Die Funktion für CV_w
 
@@ -37,7 +43,6 @@ CV2 <- function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
 
 # Alle sind jeweils in einer Matrix, Zeilen sind geo_2, Spalten sind Jahre
 
-
 ## 2.1 y
 
 Y<-matrix(NA,n_2,k)
@@ -64,6 +69,7 @@ Y[i,j] <- CV2(gdp_2, gdp_3, pop_2, pop_3)
 
 # If Nuts 2 == Nuts 3, the CV is 0.
 # we use the same approach as the paper and substitute with the national average
+# of interregional inequality
 
 for (i in 1:length(Y[,1])) {
   
