@@ -35,10 +35,6 @@ CV2 <- function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
 }
 
 
-
-
-
-
 ### 2. Abhängige und unabhängige Variablen
 
 # Alle sind jeweils in einer Matrix, Zeilen sind geo_2, Spalten sind Jahre

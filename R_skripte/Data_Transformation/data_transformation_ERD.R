@@ -22,7 +22,7 @@ if(min==0){
 if(min==1){
   ###############################DEFINE#########################
   #nonEU<-list("AL","CH","EF","EU","IS","ME","MK","NO","TR","LI")
-  drop<-c("NO")
+  drop<-c("NO","LU","CY")
   period<-c(1996:2015)
   overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
   
