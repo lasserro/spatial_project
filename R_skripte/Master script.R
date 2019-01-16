@@ -7,6 +7,9 @@ library(eurostat)
 library(dplyr)
 library(rgdal)
 library(spdep)
+library(plm)
+library(reshape2)
+library(splm)
 
 ### Data collection
 
@@ -26,7 +29,7 @@ kn<-5
 
 source("./R_skripte/Data Transformation.R") #ERD
 
-rm(X_1,X_2,Y,drop,min,overseas,CV,GDP_ERD,POP_ERD,gdp2,gdp3,pop2,pop3)
+#rm(X_1,X_2,Y,drop,min,overseas,CV,GDP_ERD,POP_ERD,gdp2,gdp3,pop2,pop3)
 
 ### Tests
 
