@@ -36,12 +36,35 @@ local.rob.LM <- matrix(ncol =4, nrow = 2)
 tests <- c("lml", "lme", "rlml", "rlme")
 dimnames(local.rob.LM) <- list(c("LM test", "p-value"), tests)
 
+#ad slmtest:This tests are panel versions of the locally robust LM tests of Anselin et al. (1996), based on a pooling assumption: i.e., they do not allow for any kind of individual effect. Therefore it is advisable to employ a within transformation whenever individual effects cannot be ruled out. 
+#Passt das für uns? was sind indivicual effects?
+
 for (i in tests) {
   local.rob.LM[1, i] <- slmtest(f1, data = data.long, listw = W.list.k, test = i)$statistic
   local.rob.LM[2, i] <- slmtest(f1, data = data.long, listw = W.list.k, test = i)$p.value
 }
 round(local.rob.LM, digits = 4)
 # sign. values for rlml and rlme mean that we are likely dealing with spatial dependence in the lag and in the error term, as well
+
+## Moransi
+
+WS <- listw2mat(W.list.k) # transform our weights list into an W matrix
+u <- shp$y # choose the variable of interest
+u.mean <- mean(u) # calculate the mean
+MI.u.num <- (u - u.mean)%*%WS%*%(u - u.mean) # calculate the numerator of Moran's I
+MI.u.den <- (u - u.mean)%*%(u - u.mean) # calculate the denominator of Moran's I
+MI.u <- MI.u.num/MI.u.den # divide the first by the latter to get Moran's I
+MI.u
+
+moran.test(shp$y, listw = W.list.k, alternative = "greater", randomisation = FALSE)
+# if the parameter randomisation is set to TRUE, the variance of I calculated under the assumption
+# of randomisation, if FALSE normality
+moran.test(shp$y, listw = W.list.k, alternative = "greater")
+moran.plot(shp$y, listw = W.list.k)
+
+moran.mc(shp$y, listw = W.list.k, alternative = "greater", nsim = 100)
+
+
 
 # ## Hausmann-Test: RE or FE?
 # # error and lags
