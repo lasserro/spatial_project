@@ -48,23 +48,14 @@ round(local.rob.LM, digits = 4)
 
 ## Moransi
 
-WS <- listw2mat(W.list.k) # transform our weights list into an W matrix
-u <- shp$y # choose the variable of interest
-u.mean <- mean(u) # calculate the mean
-MI.u.num <- (u - u.mean)%*%WS%*%(u - u.mean) # calculate the numerator of Moran's I
-MI.u.den <- (u - u.mean)%*%(u - u.mean) # calculate the denominator of Moran's I
-MI.u <- MI.u.num/MI.u.den # divide the first by the latter to get Moran's I
-MI.u
-
-moran.test(shp$y, listw = W.list.k, alternative = "greater", randomisation = FALSE)
-# if the parameter randomisation is set to TRUE, the variance of I calculated under the assumption
-# of randomisation, if FALSE normality
-moran.test(shp$y, listw = W.list.k, alternative = "greater")
-moran.plot(shp$y, listw = W.list.k)
-
-moran.mc(shp$y, listw = W.list.k, alternative = "greater", nsim = 100)
-
-
+moransi <- list()
+  
+for (i in 1:length(period)) {
+   f<- moran.test(data.long[data.long$time==period[i],3], listw = W.list.k, alternative = "greater", randomisation = FALSE)
+   moransi[[i]] <-f$estimate
+   f<-moran.mc(data.long[data.long$time==period[i],3], listw = W.list.k, alternative = "greater", nsim = 100)
+      moransi[[i+length(period)]] <-summary(f)
+}
 
 # ## Hausmann-Test: RE or FE?
 # # error and lags
