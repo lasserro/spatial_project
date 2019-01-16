@@ -46,6 +46,15 @@ for (i in tests) {
 round(local.rob.LM, digits = 4)
 # sign. values for rlml and rlme mean that we are likely dealing with spatial dependence in the lag and in the error term, as well
 
+#### Let's see if there's spatial dependence in the error terms
+moran.I <- matrix(ncol = 2, nrow = k)
+dimnames(moran.I) <- list(period,c("Moran's I", "p-value"))
+
+for (i in 1:k) {
+  moran.I[i,1] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$statistic
+  moran.I[i,2] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$p.value
+}
+
 ## Moransi
 
 moransi <- list()
