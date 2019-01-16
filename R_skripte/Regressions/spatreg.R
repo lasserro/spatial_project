@@ -98,22 +98,6 @@ MI.y
 moran.mc(shp$"1996", listw = W.list.k, alternative = "greater", nsim = 1000)
 
 
-####### Try SAR
-SAR <- lagsarlm(f1, data=data.long[data.long$time==2000,], W.list.k, tol.solve=1.0e-30)
-summary(SAR)
-
-data.long$residuals <- residuals(SAR)
-moran.mc(data.long$residuals, W.list.k, 999) #different lenght?
-
-brks <- quantile(data.long$residuals, 0:(grps-1)/(grps-1), na.rm=TRUE)
-p <- spplot(data.long, "residuals", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
-print( p + layer(sp.polygons(data.long)) )
-
-#--Impacts
-
-sar.impacts<-impacts(SAR, listw = W.list.k)
-sar.impacts
-
 
 ################# Spatial Regression #################
 ##### Model #####
@@ -122,25 +106,30 @@ f1 <- y ~ x_1 + I((x_1)^2) + x_2
 ##### SAR Model #####
 sar <- list()
 for (i in 1:length(period)) {
-  f <- lagsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, tol.solve=1.0e-30)
-  sar[[i]] <- summary(f)
+  sar[[i]] <- lagsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, tol.solve=1.0e-30)
 }
 names(sar) <- period
 
 ##### SEM Model #####
 sem <- list()
 for (i in 1:length(period)) {
-  f <- errorsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, tol.solve=1.0e-30)
-  sem[[i]] <- summary(f)
+  sem[[i]] <- errorsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, tol.solve=1.0e-30)
 }
 names(sem) <- period
 
 ##### SDM Model #####
 sdm <- list()
 for (i in 1:length(period)) {
-  f <- lagsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, type="mixed",  tol.solve=1.0e-30)
-  sdm[[i]] <- summary(f, correlation = FALSE)
+  sdm[[i]] <- lagsarlm(f1, data=data.long[data.long$time==period[i],], W.list.k, type="mixed",  tol.solve=1.0e-30)
 }
 names(sdm) <- period
 
-
+#direct indirect and total effects
+for (i in 1:k) {
+sar.impacts[[i]]<-impacts(sar[[i]], listw = W.list.k)
+sdm.impacts[[i]]<-impacts(sdm[[i]], listw = W.list.k)
+#sem.impacts[[i]]<-impacts(sem[[i]], listw = W.list.k)
+}
+names(sar.impacts) <- period
+names(sdm.impacts) <- period
+#names(sem.impacts) <- period
