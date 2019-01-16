@@ -99,10 +99,6 @@ GDP_ERD <- left_join(nuts_2013,GDP_ERD, by = c("code2013" = "nuts_code"))
 
 # and fill in missing values accordingly
 
-# hier wäre der ideale Punkt um Später diese nuts2=nuts3 werte in national averages
-# zu transformieren...
-
-
 for (i in 1:length(GDP_ERD$code2013)) {
   
   if(GDP_ERD[i,2] %in% NA)
@@ -143,7 +139,6 @@ gdp3 <- GDP_ERD %>% filter(nuts_level == 3)
 gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 
 
-
 rm(nuts_2013,charcols)
 
 #Define:
@@ -170,11 +165,10 @@ CV <- function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
 }
 
 
-### 2. Abhängige und unabhängige Variablen
+### 2. Create variables for the regression
 
-# Alle sind jeweils in einer Matrix, Zeilen sind geo_2, Spalten sind Jahre
 
-## 2.1 y
+## 2.1 Y - The weighted coefficient of variation
 
 Y<-matrix(NA,n_2,k)
 colnames(Y)<-period
@@ -213,16 +207,12 @@ for (i in 1:length(Y[,1])) {
 
 rm(gdp_2, gdp_3, pop_2, pop_3)
 
-# extract CV_2013 from Y for shp13:
-#Y13 <- as.data.frame(Y[,'2013'])
-#Y13$nuts_2 <- rownames(Y13)
-
-## 2.2 x_1
+## 2.2 x_1: GDP per capita per for each nuts_2 region 
 
 X_1 <- as.matrix(gdp2[-(1:4)])
 rownames(X_1)<-unique(pop2$nuts_2)
 
-## 2.3 x_2
+## 2.3 x_2: number of nuts_3 region in each nuts_2 region
 
 X_2<- POP_ERD %>%
   filter(nuts_level == 3) %>%
@@ -232,11 +222,49 @@ X_2<- POP_ERD %>%
 
 X_2 <- data.matrix(X_2)
 rownames(X_2)<-unique(pop2$nuts_2)
+#X_2 <-X_2[,-1]
 
 
-# X_2 <- X_2[,2]
-# X_2.1 <-matrix(X_2,n_2,k)
-# colnames(X_2.1)<-period
-# rownames(X_2.1)<-unique(pop2$nuts_2)
+### Combine with shapefiles
 
+# reduce shape file and the data shp2 to our dataset
+shp <- shp2[shp2$NUTS_ID %in% pop2$nuts_2, ]
+# test
+#setdiff(shp$NUTS_ID, pop2$nuts_2) # alright
 
+#prepare data
+shp_list <- vector('list', 20)
+Y0 <- as.data.frame(Y)
+Y0$'nuts_2' <- rownames(Y0)
+X_1df <- as.data.frame(X_1)
+X_1df$'nuts_2' <- rownames(X_1df)
+X_2df <- as.data.frame(X_2)
+X_2df$'nuts_2' <- rownames(X_2df)
+
+#and merge
+for (i in 1:20) {
+  shp_list[i] <- merge(shp, pop2[, c(4, i+4)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[6] <- 'Pop'
+  shp_list[[i]] <- merge(shp_list[[i]], gdp2[,c(4, i+4)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[7] <- 'Gdp'
+  shp_list[[i]] <- merge(shp_list[[i]], Y0[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[8] <- 'Y'
+  shp_list[[i]] <- merge(shp_list[[i]], X_1df[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[9] <- 'X_1'
+  shp_list[[i]] <- merge(shp_list[[i]], X_2df, all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[10] <- 'X_2'
+}
+# The following warning is produced: implicit list embedding of S4 objects is deprecated.
+# As the code seems to be working we ignored it.
+
+rm(Y0, X_1df, X_2df)
+
+#get coordinates from the final dataset (it is VERY important to this at this stage,
+# if you do it with the shapefiles alone, it renders all results useless.)
+coords <- coordinates(shp_list[[1]])
+
+#and get weights lists and matrices 
+k.near <- knearneigh(coords, k=kn) #indexing neighbors based on k=5
+kn <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
+W.list.k <- nb2listw(kn, style = "W", zero.policy = FALSE) #creating a weights-list
+W.mat <- listw2mat(W.list.k) #creates a weigths matrix

@@ -117,7 +117,7 @@ rm(Y0, X_1df, X_2df)
 View(shp_list[[3]]) # for 1998
 
 #########
-shp_list <- vector('list', 20)
+shp_listx <- vector('list', 20)
 Y0 <- as.data.frame(Y)
 Y0$'nuts_2' <- rownames(Y0)
 X_1df <- as.data.frame(X_1)
@@ -127,19 +127,19 @@ X_2df$'nuts_2' <- rownames(X_2df)
 
 
 for (i in 1:20) {
-  shp_list[i] <- merge(shp2, pop2[, c(4, I(i + 4))], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
-  colnames(shp_list[[i]]@data)[6] <- 'Pop'
-  shp_list[[i]] <- merge(shp_list[[i]], gdp2[,c(4, I(i + 4))], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
-  colnames(shp_list[[i]]@data)[7] <- 'Gdp'
-  shp_list[[i]] <- merge(shp_list[[i]], Y0[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
-  colnames(shp_list[[i]]@data)[8] <- 'Y'
-  shp_list[[i]] <- merge(shp_list[[i]], X_1df[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
-  colnames(shp_list[[i]]@data)[9] <- 'X_1'
-  shp_list[[i]] <- merge(shp_list[[i]], X_2df, all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
-  colnames(shp_list[[i]]@data)[10] <- 'X_2'
+  shp_listx[i] <- merge(shp2, pop2[, c(4, i + 4)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_listx[[i]]@data)[6] <- 'Pop'
+  shp_listx[[i]] <- merge(shp_listx[[i]], gdp2[,c(4, i + 4)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_listx[[i]]@data)[7] <- 'Gdp'
+  shp_listx[[i]] <- merge(shp_listx[[i]], Y0[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_listx[[i]]@data)[8] <- 'Y'
+  shp_listx[[i]] <- merge(shp_listx[[i]], X_1df[,c(i, 21)], all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_listx[[i]]@data)[9] <- 'X_1'
+  shp_listx[[i]] <- merge(shp_listx[[i]], X_2df, all.x= T, all.y= F, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_listx[[i]]@data)[10] <- 'X_2'
 }
 rm(Y0, X_1df, X_2df)
-View(shp_list[[3]]) # for 1998
+View(shp_listx[[3]]) # for 1998
 
 coords1 <- coordinates(shp_list[[1]])
 

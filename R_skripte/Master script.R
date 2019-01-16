@@ -10,7 +10,7 @@ library(spdep)
 
 ### Data collection
 
-source("./R_skripte/Data_Transformation/data_download ERD.R") #European Regional Database
+source("./R_skripte/Data Download.R") #European Regional Database
 
 
 ### Data transformation
@@ -20,11 +20,18 @@ source("./R_skripte/Data_Transformation/data_download ERD.R") #European Regional
 
 min<-1
 
-source("./R_skripte/Data_Transformation/data_transformation_ERD.R") #ERD
+#define Weightsmatrix for k-nearest neighbour
 
-### Linear Regression
+kn<-5
 
-source("./R_skripte/Regressions/linear_regression_ERD.R") #ERD
+source("./R_skripte/Data Transformation.R") #ERD
 
-### Combining Data with Shapefile (2013)
-source("./R_skripte/Data_Transformation/combining_shapefiles_with_data.R")
+rm(X_1,X_2,Y,drop,min,overseas,CV,GDP_ERD,POP_ERD,gdp2,gdp3,pop2,pop3)
+
+### Tests
+
+#source("./R_skripte/Spatial Tests.R") #ERD
+
+### Regressions
+
+source("./R_skripte/Regressions.R") #ERD
