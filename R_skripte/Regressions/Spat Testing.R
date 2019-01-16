@@ -59,8 +59,34 @@ for (i in 1:k) {
   #tests[i,6] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$p.value  
 }
 
-## Moransi
+#LISA
 
+
+tests.lisa<-data.long %>% filter(time==2000)
+
+
+tests.lisa$lisa<- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[,1]
+tests.lisa$lisa_prob <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[,5]
+
+
+lisa <-localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")
+
+#shp2.lisa <- fortify(shp2, region="NUTS_ID")
+shp.lisa <- merge(shp2.lisa,tests.lisa, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "nuts_2")
+
+library(GISTools)
+sids79.shading <- auto.shading(c(lisa[,1], -lisa[,1]),
+                               cols=brewer.pal(5, "PRGn"))
+choropleth(shp, lisa[,1], shading=sids79.shading, main="Disposable income in EU NUTS 2")
+#locator(1)
+choro.legend(-1423654, 11198209, sh=sids79.shading, cex=0.6, title="Local Moran's I")
+
+#for (i in 1:k) {
+#  tests.lisa[i,6] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[1]
+#  tests.lisa[i,7] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[5]
+#}
+
+## Moransi
 moransi <- list()
   
 for (i in 1:length(period)) {
