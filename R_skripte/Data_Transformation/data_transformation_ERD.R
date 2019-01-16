@@ -142,27 +142,101 @@ gdp3 <- GDP_ERD %>% filter(nuts_level == 3)
 
 gdp3[,-(1:4)] <- gdp3[,-(1:4)] / pop3[,-(1:4)]
 
-## 2.2 Level 2 & 3 combined (if needed, note its absolut)
-
-#gdp23 <- GDP_ERD %>% select(charcols, paste(period)) %>%
-#  filter(!country %in% drop,
-#         nuts_level == 2 |
-#         nuts_level == 3
-#         )
-
-#pop23 <- POP_ERD %>% select(charcols, paste(period)) %>%
-#  filter(!country %in% drop,
-#         nuts_level == 2 |
-#         nuts_level == 3
-#         )
-
-## 2.3 Define stuff for later use
-
-#n_0 <- length(table(pop2$country))
-#n_2 <- length(table(pop2$nuts_2))
-#k <- length(period)
 
 
 rm(nuts_2013,charcols)
+
+#Define:
+#number of Nuts_2 regions in dataset:
+n_2 <- length(table(pop2$nuts_2))
+#number of observed years: 
+k <- length(period)
+
+
+### 1. Die Funktion für CV_w
+
+#function to calculate the weighted coefficient of variation
+##where
+#gdp3.......vector of gdp per capita at nuts_3
+#gdp2.......scalar of average gdp per capita at nuts_2
+#pop3.......vector of population at nuts_3
+#pop2.......scalar of population at nuts_2
+
+CV <- function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
+  
+  t <- sapply(gdp3, function(x) (x-gdp2)^2)
+  t <- sqrt(sum(t*(pop3/pop2)))/gdp2
+  return(t)
+}
+
+
+### 2. Abhängige und unabhängige Variablen
+
+# Alle sind jeweils in einer Matrix, Zeilen sind geo_2, Spalten sind Jahre
+
+## 2.1 y
+
+Y<-matrix(NA,n_2,k)
+colnames(Y)<-period
+rownames(Y)<-unique(pop2$nuts_2)
+
+for (j in 1:k) {
+  
+  for (i in 1:n_2) {
+    
+    gdp_2 <- gdp2[i,j+4]
+    
+    pop_2 <- pop2[i,j+4]
+    
+    gdp_3 <- gdp3 %>% filter(nuts_2 == gdp2[i,"nuts_2"])
+    gdp_3 <- gdp_3[,j+4]
+    
+    pop_3 <- pop3 %>% filter(nuts_2 == gdp2[i,"nuts_2"])
+    pop_3 <- pop_3[,j+4]
+    
+    Y[i,j] <- CV(gdp_2, gdp_3, pop_2, pop_3)
+    
+  }}
+
+# If Nuts 2 == Nuts 3, the CV is 0.
+# we use the same approach as the paper and substitute with the national average
+# of interregional inequality
+
+for (i in 1:length(Y[,1])) {
+  
+  if(Y[i,3] == 0){
+    for (j in 1:length(Y[1,])) {
+      Y[i,j] <- mean(Y[substr(rownames(Y),1,2)==substr(rownames(Y)[i],1,2),j])      
+    }
+  }
+}
+
+rm(gdp_2, gdp_3, pop_2, pop_3)
+
+# extract CV_2013 from Y for shp13:
+#Y13 <- as.data.frame(Y[,'2013'])
+#Y13$nuts_2 <- rownames(Y13)
+
+## 2.2 x_1
+
+X_1 <- as.matrix(gdp2[-(1:4)])
+rownames(X_1)<-unique(pop2$nuts_2)
+
+## 2.3 x_2
+
+X_2<- POP_ERD %>%
+  filter(nuts_level == 3) %>%
+  filter(!nuts_2 %in% overseas) %>%
+  group_by(nuts_2) %>% 
+  summarise(count=n()) 
+
+X_2 <- data.matrix(X_2)
+rownames(X_2)<-unique(pop2$nuts_2)
+
+
+# X_2 <- X_2[,2]
+# X_2.1 <-matrix(X_2,n_2,k)
+# colnames(X_2.1)<-period
+# rownames(X_2.1)<-unique(pop2$nuts_2)
 
 

@@ -59,3 +59,16 @@ x<-df %>%
 
 #scheint zu funktionieren, gibt einige 0s, z.B. für Wien (nuts2==nuts3),
 #eh kloar? Problem?
+
+
+CV<-function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
+  total<-0
+  for (i in 1:length(gdp3)) {
+    total<-total+
+      ((gdp3[i]-gdp2[1])^2) *
+      (pop3[i]/pop2[1])
+  }
+  total<-((total^(1/2))/(gdp2[1]))
+  return(total)
+}
+

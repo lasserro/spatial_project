@@ -113,6 +113,25 @@ df<-nuts_3 %>%
   left_join(nuts_2, nuts_3, by = c("time","country","geo_2") )
 
 
+## 2.2 Level 2 & 3 combined (if needed, note its absolut)
+
+#gdp23 <- GDP_ERD %>% select(charcols, paste(period)) %>%
+#  filter(!country %in% drop,
+#         nuts_level == 2 |
+#         nuts_level == 3
+#         )
+
+#pop23 <- POP_ERD %>% select(charcols, paste(period)) %>%
+#  filter(!country %in% drop,
+#         nuts_level == 2 |
+#         nuts_level == 3
+#         )
+
+## 2.3 Define stuff for later use
+
+#n_0 <- length(table(pop2$country))
+#n_2 <- length(table(pop2$nuts_2))
+#k <- length(period)
 
 
 
