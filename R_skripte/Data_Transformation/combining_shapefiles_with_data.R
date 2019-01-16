@@ -91,6 +91,23 @@ p2 <- spplot(shp13, "CV_2013", at=brks2, col.regions=rev(brewer.pal(grps2, "RdBu
 p2 + layer(sp.polygons(shp13))
 
 #_______________________________________________________________________________
+#################### CREATE LIST OF SHAPEFILES FOR ALL YEARS ###################
+shp_list <- vector('list', 20)
+Y0 <- as.data.frame(Y)
+Y0$'nuts_2' <- rownames(Y0)
+
+for (i in 1:20) {
+  shp_list[i] <- merge(shp2, pop2[, c(4, I(i + 4))], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[6] <- 'Pop'
+  shp_list[[i]] <- merge(shp_list[[i]], gdp2[,c(4, I(i + 4))], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[7] <- 'Gdp'
+  shp_list[[i]] <- merge(shp_list[[i]], Y0[,c(i, 21)], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[8] <- 'Y'
+}
+
+View(shp_list[[3]]) # for 1998
+
+
 
 
 
@@ -119,9 +136,3 @@ p2 + layer(sp.polygons(shp13))
 
 # we can also exclude all oversea territories
 #shp <- shp[! shp$NUTS_ID %in% overseas, ]
-
-
-
-
-
-
