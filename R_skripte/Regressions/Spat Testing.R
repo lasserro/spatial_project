@@ -47,12 +47,16 @@ round(local.rob.LM, digits = 4)
 # sign. values for rlml and rlme mean that we are likely dealing with spatial dependence in the lag and in the error term, as well
 
 #### Let's see if there's spatial dependence in the error terms
-moran.I <- matrix(ncol = 2, nrow = k)
-dimnames(moran.I) <- list(period,c("Moran's I", "p-value"))
+tests <- matrix(ncol = 6, nrow = k)
+dimnames(tests) <- list(period,c("Moran's I", "Moran-p-value","Geary C","Geary-p-value","LISA","Lisa-p-value"))
 
 for (i in 1:k) {
-  moran.I[i,1] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$statistic
-  moran.I[i,2] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$p.value
+  tests[i,1] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$statistic
+  tests[i,2] <- moran.mc(lm[[i]]$residuals,W.list.k,999)$p.value
+  tests[i,3] <- geary.test(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$statistic
+  tests[i,4] <- geary.test(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$p.value
+ # tests[i,5] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$statistic
+  #tests[i,6] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$p.value  
 }
 
 ## Moransi
