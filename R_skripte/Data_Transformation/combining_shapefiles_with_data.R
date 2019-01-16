@@ -95,6 +95,11 @@ p2 + layer(sp.polygons(shp13))
 shp_list <- vector('list', 20)
 Y0 <- as.data.frame(Y)
 Y0$'nuts_2' <- rownames(Y0)
+X_1df <- as.data.frame(X_1)
+X_1df$'nuts_2' <- rownames(X_1df)
+X_2df <- as.data.frame(X_2)
+X_2df$'nuts_2' <- rownames(X_2df)
+
 
 for (i in 1:20) {
   shp_list[i] <- merge(shp2, pop2[, c(4, I(i + 4))], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
@@ -103,8 +108,12 @@ for (i in 1:20) {
   colnames(shp_list[[i]]@data)[7] <- 'Gdp'
   shp_list[[i]] <- merge(shp_list[[i]], Y0[,c(i, 21)], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
   colnames(shp_list[[i]]@data)[8] <- 'Y'
-}
-
+  shp_list[[i]] <- merge(shp_list[[i]], X_1df[,c(i, 21)], all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[9] <- 'X_1'
+  shp_list[[i]] <- merge(shp_list[[i]], X_2df, all.x= F, all.y= T, by.x= 'NUTS_ID', by.y='nuts_2')
+  colnames(shp_list[[i]]@data)[10] <- 'X_2'
+   }
+rm(Y0, X_1df, X_2df)
 View(shp_list[[3]]) # for 1998
 
 
