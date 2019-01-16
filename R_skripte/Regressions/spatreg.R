@@ -96,3 +96,23 @@ MI.y
 
 # calculating Morans I with formula
 moran.mc(shp$"1996", listw = W.list.k, alternative = "greater", nsim = 1000)
+
+
+####### Try SAR
+SAR <- lagsarlm(f1, data=data.long[data.long$time==2000,], W.list.k, tol.solve=1.0e-30)
+summary(SAR)
+
+data.long$residuals <- residuals(SAR)
+moran.mc(data.long$residuals, W.list.k, 999) #different lenght?
+
+brks <- quantile(data.long$residuals, 0:(grps-1)/(grps-1), na.rm=TRUE)
+p <- spplot(data.long, "residuals", at=brks, col.regions=rev(brewer.pal(grps, "RdBu")), col="transparent")
+print( p + layer(sp.polygons(data.long)) )
+
+#--Impacts
+
+sar.impacts<-impacts(SAR, listw = W.list.k)
+sar.impacts
+
+
+
