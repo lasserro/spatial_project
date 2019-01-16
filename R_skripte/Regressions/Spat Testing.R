@@ -59,8 +59,25 @@ for (i in 1:k) {
   #tests[i,6] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")$p.value  
 }
 
-## Moransi
+#LISA
 
+
+tests.lisa<-data.long %>% filter(time==2000)
+
+
+tests.lisa$lisa<- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[,1]
+tests.lisa$lisa_prob <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[,5]
+
+shp2.lisa <- fortify(shp2, region="NUTS_ID")
+shp.lisa <- merge(shp2.lisa,tests.lisa, all.x = FALSE, all.y = TRUE, by.x = "NUTS_ID", by.y = "nuts_2")
+
+
+#for (i in 1:k) {
+#  tests.lisa[i,6] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[1]
+#  tests.lisa[i,7] <- localmoran(lm[[i]]$residuals, listw = W.list.k, alternative = "greater")[5]
+#}
+
+## Moransi
 moransi <- list()
   
 for (i in 1:length(period)) {
