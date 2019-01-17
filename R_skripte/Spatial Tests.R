@@ -53,8 +53,6 @@ for (i in 1:k) {
 
 ## and attempt to plot lisa
 
-
-<<<<<<< HEAD
 #lisa<-lisa.test[[1]]
   
 #  lisa.shp <- shp_list[[1]]
@@ -64,36 +62,6 @@ for (i in 1:k) {
   # convert to a data.frame
 #  lisa.shp <- fortify(lisa.shp, region="NUTS_ID")
   
-=======
-lisa<-lisa.test[[1]]
-
-
-# load data
-data("oregon.tract")
-
-# plot Census Tract map
-plot(oregon.tract)
-
-# create  Queens contiguity matrix
-spatmatrix <- poly2nb(oregon.tract)
-
-#calculate the local moran of the distribution of black population
-lmoran <- localmoran(oregon.tract@data$black, nb2listw(spatmatrix))
-
-# get our id from the rownames in a data.frame
-oregon.tract@data$id <- rownames(oregon.tract@data)
-oregon.tract@data$lmoran_ii <- lmoran[,1]
-oregon_df <- merge(
-  
-  
-#  lisa.shp <- shp_list[[1]]
-#  lisa.shp@data$lisa <- lisa[,1]
-  
-  
-  # convert to a data.frame
-#  lisa.shp <- fortify(lisa.shp, region="NUTS_ID")
-  
->>>>>>> 48abafa67b3ba76d7d3e6fbfa88cbcdb09e0f336
   
 #  oregon.tract@data, 
 #  by="id"
