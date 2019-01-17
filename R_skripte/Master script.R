@@ -11,6 +11,7 @@ library(plm)
 library(reshape2)
 library(splm)
 
+
 ### Data collection
 
 source("./R_skripte/Data Download.R") #European Regional Database
@@ -33,7 +34,7 @@ source("./R_skripte/Data Transformation.R") #ERD
 
 ### Tests
 
-#source("./R_skripte/Spatial Tests.R") #ERD
+source("./R_skripte/Spatial Tests.R") #ERD
 
 ### Regressions
 

@@ -52,3 +52,20 @@ sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list.k))
 sdm.impacts <- lapply(1:k, function(i) impacts(sdm[[i]], listw = W.list.k))
 #sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list.k))
 # machen impacts in einem error model sinn?
+
+
+#SPLM
+
+#extract data: 
+data.long <- shp_list[[1]]@data
+for (i in 2:k) {
+  data.long <- rbind(data.long,shp_list[[i]]@data)
+}
+#add time column
+data.long$time <- sort(rep(period,n_2))
+data.long <- as.data.frame(data.long)
+data.long <- data.long[,c(1,11,2:10)]
+
+#The regression (i set it to pooling, funkt aber keine ahnung was es macht)
+spml(f1, data = data.long, listw = W.list.k,
+     model="pooling")
