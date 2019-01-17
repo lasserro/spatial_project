@@ -41,6 +41,7 @@ for (i in 1:k) {
   moran_res[i,5] <- f$estimate[1]
   moran_res[i,6] <- f$p.value
 }
+#Die p-values für den mc.moran funkt glaub ich nicht
 
 ## and LISA...
 lisa.test <- list()
@@ -52,13 +53,58 @@ for (i in 1:k) {
 
 ## and attempt to plot lisa
 
+
 lisa<-lisa.test[[1]]
+
+
+# load data
+data("oregon.tract")
+
+# plot Census Tract map
+plot(oregon.tract)
+
+# create  Queens contiguity matrix
+spatmatrix <- poly2nb(oregon.tract)
+
+#calculate the local moran of the distribution of black population
+lmoran <- localmoran(oregon.tract@data$black, nb2listw(spatmatrix))
+
+# get our id from the rownames in a data.frame
+oregon.tract@data$id <- rownames(oregon.tract@data)
+oregon.tract@data$lmoran_ii <- lmoran[,1]
+oregon_df <- merge(
   
-library(GISTools)
-sids79.shading <- auto.shading(c(lisa[,1], -lisa[,1]),
-                               cols=brewer.pal(5, "PRGn"))
-choropleth(shp_list[[1]], lisa[,1], shading=sids79.shading, main="Disposable income in EU NUTS 2")
-#locator(1)
-choro.legend(-1423654, 11198209, sh=sids79.shading, cex=0.6, title="Local Moran's I")
+  
+#  lisa.shp <- shp_list[[1]]
+#  lisa.shp@data$lisa <- lisa[,1]
+  
+  
+  # convert to a data.frame
+#  lisa.shp <- fortify(lisa.shp, region="NUTS_ID")
+  
+  
+#  oregon.tract@data, 
+#  by="id"
+#)
 
+#ggplot(data=lisa.shp, aes(x=long,y=lat,group=group)) +
+#  geom_polygon(fill=scales::col_numeric("Blues",domain=c(-1,5))(lisa.shp$lisa)) +
+#  geom_path(color="white")
 
+### LM-tests
+  
+    
+  ## Lag Structure
+  local.rob.LM <- matrix(ncol =4, nrow = 2)
+  tests <- c("lml", "lme", "rlml", "rlme")
+  dimnames(local.rob.LM) <- list(c("LM test", "p-value"), tests)
+  
+  #ad slmtest:This tests are panel versions of the locally robust LM tests of Anselin et al. (1996), based on a pooling assumption: i.e., they do not allow for any kind of individual effect. Therefore it is advisable to employ a within transformation whenever individual effects cannot be ruled out. 
+  #Passt das für uns? was sind indivicual effects?
+  
+  for (i in tests) {
+    local.rob.LM[1, i] <- slmtest(f1, data = data.long, listw = W.list.k, test = i)$statistic
+    local.rob.LM[2, i] <- slmtest(f1, data = data.long, listw = W.list.k, test = i)$p.value
+  }
+  round(local.rob.LM, digits = 4)
+  # sign. values for rlml and rlme mean that we are likely dealing with spatial dependence in the lag and in the error term, as well
