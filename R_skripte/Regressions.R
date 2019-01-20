@@ -14,6 +14,40 @@ for (i in 1:k) {
   names(lm[[i]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
 }
 
+#### TESTS ####
+# Test for heteroskedasticity - Breusch-Pagan-Test
+library(AER)
+bp_lm <- matrix(nrow = k, ncol = 2)
+dimnames(bp_lm) <- list(period, c("Breusch-Pagan", "p-value"))
+for (i in 1:k) {
+  bp_lm[i,1] <- bptest(lm[[i]])$statistic
+  bp_lm[i,2] <- bptest(lm[[i]])$p.value
+}
+
+# Test for normality - Jarque-Bera Test
+library(tseries)
+jb_lm <- matrix(nrow = k, ncol = 2)
+dimnames(jb_lm) <- list(period, c("Jarque-Bera", "p-value"))
+for (i in 1:k) {
+  jb_lm[i,1] <- jarque.bera.test(lm[[i]]$residuals)$statistic
+  jb_lm[i,2] <- jarque.bera.test(lm[[i]]$residuals)$p.value
+}
+
+## Test for Spatial Dependence
+# LM-Tests
+lm_tests <- matrix(nrow = k, ncol = 8)
+dimnames(lm_tests) <- list(period, c("LMerr","p-value","LMlag","p-value","RLMerr","p-value","RLMlag","p-value"))
+for (i in 1:k) {
+  lm_tests[i,1] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMerr")$LMerr$statistic
+  lm_tests[i,2] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMerr")$LMerr$p.value
+  lm_tests[i,3] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMlag")$LMlag$statistic
+  lm_tests[i,4] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMlag")$LMlag$p.value
+  lm_tests[i,5] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMerr")$RLMerr$statistic
+  lm_tests[i,6] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMerr")$RLMerr$p.value
+  lm_tests[i,7] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMlag")$RLMlag$statistic
+  lm_tests[i,8] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMlag")$RLMlag$p.value
+}
+
 ## 3.1 How to access stuff:
 
 # extract just coefficients
