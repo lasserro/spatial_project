@@ -11,7 +11,7 @@ lm <- lapply(1:k, function(i) lm(f1,data=shp_list[[i]]))
 #and rename them conviniently
 for (i in 1:k) {
   names(lm)[i] <- paste("lm_", period[i], sep = "")
-  names(lm[[1]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
+  names(lm[[i]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
 }
 
 ## 3.1 How to access stuff:
