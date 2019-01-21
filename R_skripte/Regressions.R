@@ -38,14 +38,14 @@ for (i in 1:k) {
 lm_tests <- matrix(nrow = k, ncol = 8)
 dimnames(lm_tests) <- list(period, c("LMerr","p-value","LMlag","p-value","RLMerr","p-value","RLMlag","p-value"))
 for (i in 1:k) {
-  lm_tests[i,1] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMerr")$LMerr$statistic
-  lm_tests[i,2] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMerr")$LMerr$p.value
-  lm_tests[i,3] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMlag")$LMlag$statistic
-  lm_tests[i,4] <- lm.LMtests(lm[[i]],listw = W.list.k,test="LMlag")$LMlag$p.value
-  lm_tests[i,5] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMerr")$RLMerr$statistic
-  lm_tests[i,6] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMerr")$RLMerr$p.value
-  lm_tests[i,7] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMlag")$RLMlag$statistic
-  lm_tests[i,8] <- lm.LMtests(lm[[i]],listw = W.list.k,test="RLMlag")$RLMlag$p.value
+  lm_tests[i,1] <- lm.LMtests(lm[[i]],listw = W.list,test="LMerr")$LMerr$statistic
+  lm_tests[i,2] <- lm.LMtests(lm[[i]],listw = W.list,test="LMerr")$LMerr$p.value
+  lm_tests[i,3] <- lm.LMtests(lm[[i]],listw = W.list,test="LMlag")$LMlag$statistic
+  lm_tests[i,4] <- lm.LMtests(lm[[i]],listw = W.list,test="LMlag")$LMlag$p.value
+  lm_tests[i,5] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMerr")$RLMerr$statistic
+  lm_tests[i,6] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMerr")$RLMerr$p.value
+  lm_tests[i,7] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMlag")$RLMlag$statistic
+  lm_tests[i,8] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMlag")$RLMlag$p.value
 }
 
 ## 3.1 How to access stuff:
@@ -67,24 +67,24 @@ for (i in 1:k) {
 
 ##### SAR Model #####
 
-  sar <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], W.list.k, tol.solve=1.0e-30))
+  sar <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
   names(sar) <- period
 
 ##### SEM Model #####
 
-  sem <-lapply(1:k, function(i) errorsarlm(f1, data=shp_list[[i]], W.list.k, tol.solve=1.0e-30))
+  sem <-lapply(1:k, function(i) errorsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
   names(sem) <- period
 
 ##### SDM Model #####
   
-sdm <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], type="mixed", W.list.k, tol.solve=1.0e-30))
+sdm <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], type="mixed", W.list, tol.solve=1.0e-30))
 names(sdm) <- period
 
 #direct indirect and total effects
 
-sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list.k))
-sdm.impacts <- lapply(1:k, function(i) impacts(sdm[[i]], listw = W.list.k))
-#sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list.k))
+sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list))
+sdm.impacts <- lapply(1:k, function(i) impacts(sdm[[i]], listw = W.list))
+#sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list))
 # machen impacts in einem error model sinn?
 
 
@@ -101,5 +101,5 @@ data.long <- as.data.frame(data.long)
 data.long <- data.long[,c(1,11,2:10)]
 
 #The regression (i set it to pooling, funkt aber keine ahnung was es macht)
-spml(f1, data = data.long, listw = W.list.k,
+spml(f1, data = data.long, listw = W.list,
      model="pooling")
