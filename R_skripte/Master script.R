@@ -28,11 +28,15 @@ min<-1
 
 kn<-5
 
+
 source("./R_skripte/Data Transformation.R") #ERD
 
 #rm(X_1,X_2,Y,drop,min,overseas,CV,GDP_ERD,POP_ERD,gdp2,gdp3,pop2,pop3)
 
 ### Tests
+#Define Weightslist
+W.list <- W.list.k
+# W.list <- W.list.inv
 
 source("./R_skripte/Spatial Tests.R") #ERD
 
