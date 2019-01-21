@@ -268,3 +268,11 @@ k.near <- knearneigh(coords, k=kn) #indexing neighbors based on k=5
 kn <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
 W.list.k <- nb2listw(kn, style = "W", zero.policy = FALSE) #creating a weights-list
 W.mat <- listw2mat(W.list.k) #creates a weigths matrix
+
+#### reverse distance matrix ####
+distw.tot <- dnearneigh(coords,0,Inf, row.names = shp_list[[1]]$NUTS_ID) #getting a 
+#indexing list where everyone is a neighber to everyone else
+dnbdist.tot <- nbdists(distw.tot, coords) #get distances between observations
+gl.tot <- lapply(dnbdist.tot, function(x) 1/x) #calculating inverse distances
+W.list.inv <- nb2listw(distw.tot, glist=gl.tot, zero.policy=FALSE) #creates a weights-list
+
