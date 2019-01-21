@@ -35,8 +35,30 @@ table1[13,2:3] <- lm_tests[1,7:8]
 table1 <- round(table1, digits = 4)
 
 
-table_ols_list <- list()
-table <- matrix(1,13,3)
+###################### Table OLS List ######################
+
+summary_coef <- list()
 for (i in 1:k) {
-  table_ols_list[i] <- table
-    }
+  summary_coef[i] <- lapply(summaries[i], function(x) x$coefficients)
+}
+names(summary_coef) <- period
+
+table_ols_list <- list()
+table <- matrix(NA,13,3)
+for (i in 1:k) {
+  table_ols_list[[i]] <- table
+}
+
+for (i in 1:k) {
+  table_ols_list[[i]][1:4,2] <- summary_coef[[i]][1:4,1]
+  table_ols_list[[i]][1:4,3] <- summary_coef[[i]][1:4,4]
+  table_ols_list[[i]][5,2] <- sapply(summaries[i], function(x) r_sq = x$r.squared)
+  table_ols_list[[i]][6,2:3] <- jb_lm[i,]
+  table_ols_list[[i]][7,2:3] <- bp_lm[i,]
+  table_ols_list[[i]][9,2:3] <- moran_Y[i,1:2]
+  table_ols_list[[i]][10,2:3] <- lm_tests[i,1:2]
+  table_ols_list[[i]][11,2:3] <- lm_tests[i,5:6]
+  table_ols_list[[i]][12,2:3] <- lm_tests[i,3:4]
+  table_ols_list[[i]][13,2:3] <- lm_tests[i,7:8]
+  table_ols_list[[i]] <- round(table_ols_list[[i]],digits = 4)
+}
