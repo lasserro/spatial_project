@@ -63,7 +63,28 @@ sar <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], W.list, tol.solv
 names(sar) <- period
 
 # impacts (direct, indirect & total effect)
-sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], listw = W.list))
+W<-as(as_dgRMatrix_listw(W.list), "CsparseMatrix") #drop 0
+trMat<-trW(W, type="mult")
+trMC<-trW(W, type="MC")
+set.seed(12345)
+sar.impacts <- lapply(1:k, function(i) impacts(sar[[i]], tr=trMat, R=100))
+sar.impacts_summary <- lapply(1:k, function(i) summary(sar.impacts[[i]], zstats=TRUE, short=TRUE))
+
+sar.impacts_output <- list()
+imp <- matrix(nrow = 3, ncol = 6)
+dimnames(imp) <- list(c("X_1","I((X_1)^2)","X_2"),c("Direct","Dir p-value","Indirect","Indir p-value","Total","Tot p-value"))
+for (i in 1:k) {
+  sar.impacts_output[[i]] <- imp
+}
+names(sar.impacts_output) <- period
+for (i in 1:k) {
+  sar.impacts_output[[i]][1:3,1] <- sar.impacts_summary[[i]]$res$direct
+  sar.impacts_output[[i]][1:3,2] <- sar.impacts_summary[[i]]$pzmat[,1]
+  sar.impacts_output[[i]][1:3,3] <- sar.impacts_summary[[i]]$res$indirect
+  sar.impacts_output[[i]][1:3,4] <- sar.impacts_summary[[i]]$pzmat[,2]
+  sar.impacts_output[[i]][1:3,5] <- sar.impacts_summary[[i]]$res$total
+  sar.impacts_output[[i]][1:3,6] <- sar.impacts_summary[[i]]$pzmat[,3]
+}
 
 # Test for heteroskedasticity - Breusch-Pagan-Test
 bp_sar <- matrix(nrow = k, ncol = 2)
@@ -138,7 +159,22 @@ sdm <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], type="mixed", W.
 names(sdm) <- period
 
 # impacts (direct, indirect & total effect)
-sdm.impacts <- lapply(1:k, function(i) impacts(sdm[[i]], listw = W.list))
+sdm.impacts <- lapply(1:k, function(i) impacts(sdm[[i]], tr=trMat, R=100))
+sdm.impacts_summary <- lapply(1:k, function(i) summary(sdm.impacts[[i]], zstats=TRUE, short=TRUE))
+sdm.impacts_output <- list()
+for (i in 1:k) {
+  sdm.impacts_output[[i]] <- imp
+}
+names(sdm.impacts_output) <- period
+for (i in 1:k) {
+  sdm.impacts_output[[i]][1:3,1] <- sdm.impacts_summary[[i]]$res$direct
+  sdm.impacts_output[[i]][1:3,2] <- sdm.impacts_summary[[i]]$pzmat[,1]
+  sdm.impacts_output[[i]][1:3,3] <- sdm.impacts_summary[[i]]$res$indirect
+  sdm.impacts_output[[i]][1:3,4] <- sdm.impacts_summary[[i]]$pzmat[,2]
+  sdm.impacts_output[[i]][1:3,5] <- sdm.impacts_summary[[i]]$res$total
+  sdm.impacts_output[[i]][1:3,6] <- sdm.impacts_summary[[i]]$pzmat[,3]
+}
+
 
 # Test for heteroskedasticity - Breusch-Pagan-Test
 bp_sdm <- matrix(nrow = k, ncol = 2)
