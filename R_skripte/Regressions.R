@@ -218,14 +218,25 @@ for (i in 1:k) {
 }
 
 
-##### 2.4. Spatial Models with GMM
-#### 2.4.1. SAR Model
-sar_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "lag", het = TRUE))
-names(sar_gm) <- period
+# ##### 2.4. Spatial Models with GMM
+# #### 2.4.1. SAR Model
+# sar_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "lag", het = TRUE))
+# names(sar_gm) <- period
+# 
+# #### 2.4.2. SEM Model
+# sem_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "error", het = TRUE))
+# names(sem_gm) <- period
 
-#### 2.4.2. SEM Model
-sem_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "error", het = TRUE))
-names(sem_gm) <- period
+###### 2.4. 2SLS - SAR
+id <- seq(1, nrow(shp_list[[1]]@data))
+d <- distance(coord=coords, region.id = id, output = TRUE, type = "distance", 
+              shape.name = "shapefile", region.id.name="id", firstline = TRUE,
+              file.name = "Europe.GWT")
+coldist <- read.gwt2dist(file = "Europe.GWT",  region.id = id, skip = 1)
+
+sar.2stls.hac <- lapply(1:k, function(i) stslshac(f1, data=shp_list[[i]], listw=W.list, distance = coldist,
+                                                  HAC = TRUE, type ="Epanechnikov" ))
+names(sar.2stls.hac) <- period
 
 
 ##### 2.5. Spatial Panel Models
