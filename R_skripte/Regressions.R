@@ -90,11 +90,11 @@ for (i in 1:k) {
 }
 names(sar_coef) <- period
 
-thres_sar <- list()
+thres_sar <- matrix(nrow = k, ncol = 1)
 for (i in 1:k) {
-  thres_sar[i] <- sar_coef[[i]][2]/(-2*sar_coef[[i]][3])*1e+06
+  thres_sar[i,1] <- sar_coef[[i]][2]/(-2*sar_coef[[i]][3])*1e+06
 }
-names(thres_sar) <- period
+rownames(thres_sar) <- period
 
 ##### 2.2. SEM Model
 # estimating the model
@@ -126,11 +126,11 @@ for (i in 1:k) {
 }
 names(sem_coef) <- period
 
-thres_sem <- list()
+thres_sem <- matrix(nrow = k, ncol = 1)
 for (i in 1:k) {
-  thres_sem[i] <- sem_coef[[i]][2]/(-2*sem_coef[[i]][3])*1e+06
+  thres_sem[i,1] <- sem_coef[[i]][2]/(-2*sem_coef[[i]][3])*1e+06
 }
-names(thres_sem) <- period
+rownames(thres_sem) <- period
 
 ##### 2.3. SDM Model
 # estimating the model
@@ -165,11 +165,21 @@ for (i in 1:k) {
 }
 names(sdm_coef) <- period
 
-thres_sdm <- list()
+thres_sdm <- matrix(nrow = k, ncol = 1)
 for (i in 1:k) {
-  thres_sdm[i] <- sdm_coef[[i]][2]/(-2*sdm_coef[[i]][3])*1e+06
+  thres_sdm[i,1] <- sdm_coef[[i]][2]/(-2*sdm_coef[[i]][3])*1e+06
 }
-names(thres_sdm) <- period
+rownames(thres_sdm) <- period
+
+# Comparison of models (Akaike Information Criterion)
+AIC <- matrix(nrow = k, ncol = 4)
+dimnames(AIC) <- list(period,c("CLM","SAR","SEM","SDM"))
+for (i in 1:k) {
+  AIC[i,1] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[1,2]
+  AIC[i,2] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[2,2]
+  AIC[i,3] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[3,2]
+  AIC[i,4] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[4,2]
+}
 
 
 ##### 2.4. Spatial Models with GMM
