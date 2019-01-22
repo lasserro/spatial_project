@@ -83,6 +83,18 @@ for (i in 1:k) {
 }
 # pretty much the same as in the CLM case
 
+# Thresholds
+sar_coef<- list()
+for (i in 1:k) {
+  sar_coef[[i]] <- sar[[i]]$coefficients
+}
+names(sar_coef) <- period
+
+thres_sar <- list()
+for (i in 1:k) {
+  thres_sar[i] <- sar_coef[[i]][2]/(-2*sar_coef[[i]][3])*1e+06
+}
+names(thres_sar) <- period
 
 ##### 2.2. SEM Model
 # estimating the model
@@ -107,6 +119,18 @@ for (i in 1:k) {
 }
 # pretty much the same as in the CLM case
 
+# Thresholds
+sem_coef<- list()
+for (i in 1:k) {
+  sem_coef[[i]] <- sem[[i]]$coefficients
+}
+names(sem_coef) <- period
+
+thres_sem <- list()
+for (i in 1:k) {
+  thres_sem[i] <- sem_coef[[i]][2]/(-2*sem_coef[[i]][3])*1e+06
+}
+names(thres_sem) <- period
 
 ##### 2.3. SDM Model
 # estimating the model
@@ -133,6 +157,29 @@ for (i in 1:k) {
   jb_sdm[i,2] <- jarque.bera.test(sdm[[i]]$residuals)$p.value
 }
 # pretty much the same as in the CLM case
+
+# Thresholds
+sdm_coef<- list()
+for (i in 1:k) {
+  sdm_coef[[i]] <- sdm[[i]]$coefficients
+}
+names(sdm_coef) <- period
+
+thres_sdm <- list()
+for (i in 1:k) {
+  thres_sdm[i] <- sdm_coef[[i]][2]/(-2*sdm_coef[[i]][3])*1e+06
+}
+names(thres_sdm) <- period
+
+
+##### 2.4. Spatial Models with GMM
+#### 2.4.1. SAR Model
+sar_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "lag", het = TRUE))
+names(sar_gm) <- period
+
+#### 2.4.2. SEM Model
+sem_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "error", het = TRUE))
+names(sem_gm) <- period
 
 
 ##### 2.5. Spatial Panel Models
@@ -165,4 +212,3 @@ spml(f1, data = data.long, listw = W.list,
 # ...or r-squared values
 # sapply(summaries, function(x) c(r_sq = x$r.squared, 
 # adj_r_sq = x$adj.r.squared))
-
