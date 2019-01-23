@@ -86,6 +86,20 @@ for (i in 1:k) {
   sar.impacts_output[[i]][1:3,6] <- sar.impacts_summary[[i]]$pzmat[,3]
 }
 
+sar.impacts_output2 <- list()
+imp2 <- matrix(nrow = 12, ncol = 1)
+dimnames(imp2) <- list(c("Direct","X_1","I((X_1)^2)","X_2","Indirect","X_1","I((X_1)^2)","X_2","Total","X_1","I((X_1)^2)","X_2"),""
+                      )
+for (i in 1:k) {
+  sar.impacts_output2[[i]] <- imp2
+}
+names(sar.impacts_output2) <- period
+for (i in 1:k) {
+  sar.impacts_output2[[i]][c(2,6,10),1] <- sar.impacts_summary[[i]]$res$direct
+  sar.impacts_output2[[i]][c(3,7,11),1] <- sar.impacts_summary[[i]]$res$indirect
+  sar.impacts_output2[[i]][c(4,8,12),1] <- sar.impacts_summary[[i]]$res$total
+}
+
 # Test for heteroskedasticity - Breusch-Pagan-Test
 bp_sar <- matrix(nrow = k, ncol = 2)
 dimnames(bp_sar) <- list(period, c("Breusch-Pagan", "p-value"))
@@ -238,6 +252,25 @@ sar.2stls.hac <- lapply(1:k, function(i) stslshac(f1, data=shp_list[[i]], listw=
                                                   HAC = TRUE, type ="Epanechnikov" ))
 names(sar.2stls.hac) <- period
 
+sar.2stls.hac_summaries <- lapply(sar.2stls.hac, summary)
+
+
+# # impacts (direct, indirect & total effect)
+# sar.2stls.impacts <- lapply(1:k, function(i) impacts(sar.2stls.hac[[i]], tr=trMat, R=100))
+# sar.2stls.impacts_summary <- lapply(1:k, function(i) summary(sar.2stls.impacts[[i]], zstats=TRUE, short=TRUE))
+# sar.2stls.impacts_output <- list()
+# for (i in 1:k) {
+#   sar.2stls.impacts_output[[i]] <- imp
+# }
+# names(sar.2stls.impacts_output) <- period
+# for (i in 1:k) {
+#   sar.2stls.impacts_output[[i]][1:3,1] <- sar.2stls.impacts_summary[[i]]$res$direct
+#   sar.2stls.impacts_output[[i]][1:3,2] <- sar.2stls.impacts_summary[[i]]$pzmat[,1]
+#   sar.2stls.impacts_output[[i]][1:3,3] <- sar.2stls.impacts_summary[[i]]$res$indirect
+#   sar.2stls.impacts_output[[i]][1:3,4] <- sar.2stls.impacts_summary[[i]]$pzmat[,2]
+#   sar.2stls.impacts_output[[i]][1:3,5] <- sar.2stls.impacts_summary[[i]]$res$total
+#   sar.2stls.impacts_output[[i]][1:3,6] <- sar.2stls.impacts_summary[[i]]$pzmat[,3]
+# }
 
 ##### 2.5. Spatial Panel Models
 
