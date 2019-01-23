@@ -75,16 +75,16 @@ for (i in 1:k) {
   
     
   ## Lag Structure
-  local.rob.LM <- matrix(ncol =4, nrow = 2)
-  tests <- c("lml", "lme", "rlml", "rlme")
-  dimnames(local.rob.LM) <- list(c("LM test", "p-value"), tests)
-  
-  #ad slmtest:This tests are panel versions of the locally robust LM tests of Anselin et al. (1996), based on a pooling assumption: i.e., they do not allow for any kind of individual effect. Therefore it is advisable to employ a within transformation whenever individual effects cannot be ruled out. 
-  #Passt das für uns? was sind indivicual effects?
-  
-  for (i in tests) {
-    local.rob.LM[1, i] <- slmtest(f1, data = data.long, listw = W.list, test = i)$statistic
-    local.rob.LM[2, i] <- slmtest(f1, data = data.long, listw = W.list, test = i)$p.value
-  }
-  round(local.rob.LM, digits = 4)
+  # local.rob.LM <- matrix(ncol =4, nrow = 2)
+  # tests <- c("lml", "lme", "rlml", "rlme")
+  # dimnames(local.rob.LM) <- list(c("LM test", "p-value"), tests)
+  # 
+  # #ad slmtest:This tests are panel versions of the locally robust LM tests of Anselin et al. (1996), based on a pooling assumption: i.e., they do not allow for any kind of individual effect. Therefore it is advisable to employ a within transformation whenever individual effects cannot be ruled out. 
+  # #Passt das für uns? was sind indivicual effects?
+  # 
+  # for (i in tests) {
+  #   local.rob.LM[1, i] <- slmtest(f1, data = data.long, listw = W.list, test = i)$statistic
+  #   local.rob.LM[2, i] <- slmtest(f1, data = data.long, listw = W.list, test = i)$p.value
+  # }
+  # round(local.rob.LM, digits = 4)
   # sign. values for rlml and rlme mean that we are likely dealing with spatial dependence in the lag and in the error term, as well
