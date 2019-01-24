@@ -124,7 +124,7 @@ sar_gm_summaries[[1]]
 
 
 ###### Stargazer several year #####
-stargazer::stargazer(sar[1], sar[5], sar[10], sar[15], sar[20])
+stargazer::stargazer(sar[1], sar[5], sar[10], sar[15], sar[20], LMtest = T)
 stargazer::stargazer(sar.2stls.hac_summaries[1],sar.2stls.hac_summaries[5],sar.2stls.hac_summaries[10],sar.2stls.hac_summaries[15],sar.2stls.hac_summaries[20])
 
 xtableList(sar.2stls.hac_summaries[c(1,5,10,15,20)])
