@@ -24,9 +24,11 @@ for (i in 1:k) {
   bp_lm[i,1] <- bptest(lm[[i]])$statistic
   bp_lm[i,2] <- bptest(lm[[i]])$p.value
 }
-# (highly) significant values for each year meaning we are dealing with heteroscedasticity
+#interpretation: (highly) significant values for each year meaning we are dealing with heteroscedasticity
 
+######################################
 # Test for normality - Jarque-Bera Test
+#######################################
 library(tseries)
 jb_lm <- matrix(nrow = k, ncol = 2)
 dimnames(jb_lm) <- list(period, c("Jarque-Bera", "p-value"))
@@ -34,11 +36,13 @@ for (i in 1:k) {
   jb_lm[i,1] <- jarque.bera.test(lm[[i]]$residuals)$statistic
   jb_lm[i,2] <- jarque.bera.test(lm[[i]]$residuals)$p.value
 }
-# since we have significant values for each year, the normality assumption won't hold anymore --> we have to use
+#Interpretation: since we have significant values for each year, the normality assumption won't hold anymore --> we have to use
 # other estimation methods (GMM), since OLS and ML wouldn't be efficient anymore
 
+##################################
 ## Tests for Spatial Dependence
 # LM-Tests
+###################################
 lm_tests <- matrix(nrow = k, ncol = 8)
 dimnames(lm_tests) <- list(period, c("LMerr","p-value","LMlag","p-value","RLMerr","p-value","RLMlag","p-value"))
 for (i in 1:k) {
@@ -51,12 +55,16 @@ for (i in 1:k) {
   lm_tests[i,7] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMlag")$RLMlag$statistic
   lm_tests[i,8] <- lm.LMtests(lm[[i]],listw = W.list,test="RLMlag")$RLMlag$p.value
 }
-# interpretation of LM Tests !!
+# interpretation: To decide which spatial model we shall use, we used LM-tests for residual autocorrelation (LMERR) 
+# and LM-tests lagged for spatial endogenous variables (LM-LAG). The LMERR-Test suggested a spatial error model, 
+# but the robust version of the test was not significant anymore. Both the LM-LAG, as well as the robust version, 
+# are significant and therefore, we decided to use a SAR-Model. 
 
-# Other Spatial Tests
-
-
+####################################################################################
+#####################################################################################
 ################################ 2. Spatial Models ################################
+######################################################################################
+
 ##### 2.1. SAR Model
 # estimating the model
 sar <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
@@ -100,6 +108,7 @@ for (i in 1:k) {
   sar.impacts_output2[[i]][c(4,8,12),1] <- sar.impacts_summary[[i]]$res$total
 }
 
+##################################################
 # Test for heteroskedasticity - Breusch-Pagan-Test
 bp_sar <- matrix(nrow = k, ncol = 2)
 dimnames(bp_sar) <- list(period, c("Breusch-Pagan", "p-value"))
@@ -109,6 +118,7 @@ for (i in 1:k) {
 }
 # still (highly) significant values for each year meaning we are dealing with heteroscedasticity
 
+#############################################
 # Test for normality - Jarque-Bera Test
 jb_sar <- matrix(nrow = k, ncol = 2)
 dimnames(jb_sar) <- list(period, c("Jarque-Bera", "p-value"))
@@ -131,7 +141,9 @@ for (i in 1:k) {
 }
 rownames(thres_sar) <- period
 
+#######################################
 ##### 2.2. SEM Model
+########################################
 # estimating the model
 sem <-lapply(1:k, function(i) errorsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
 names(sem) <- period
@@ -231,16 +243,9 @@ for (i in 1:k) {
   AIC[i,4] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[4,2]
 }
 
-
+########################################
 # ##### 2.4. Spatial Models with GMM
-# #### 2.4.1. SAR Model
-# sar_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "lag", het = TRUE))
-# names(sar_gm) <- period
-# 
-# #### 2.4.2. SEM Model
-# sem_gm <- lapply(1:k, function(i) spreg(f1, data=shp_list[[i]], W.list, model = "error", het = TRUE))
-# names(sem_gm) <- period
-
+#######################################
 ###### 2.4. 2SLS - SAR
 id <- seq(1, nrow(shp_list[[1]]@data))
 d <- distance(coord=coords, region.id = id, output = TRUE, type = "distance", 
@@ -255,38 +260,80 @@ names(sar.2stls.hac) <- period
 sar.2stls.hac_summaries <- lapply(sar.2stls.hac, summary)
 
 
-# # impacts (direct, indirect & total effect)
-# sar.2stls.impacts <- lapply(1:k, function(i) impacts(sar.2stls.hac[[i]], tr=trMat, R=100))
-# sar.2stls.impacts_summary <- lapply(1:k, function(i) summary(sar.2stls.impacts[[i]], zstats=TRUE, short=TRUE))
-# sar.2stls.impacts_output <- list()
-# for (i in 1:k) {
-#   sar.2stls.impacts_output[[i]] <- imp
-# }
-# names(sar.2stls.impacts_output) <- period
-# for (i in 1:k) {
-#   sar.2stls.impacts_output[[i]][1:3,1] <- sar.2stls.impacts_summary[[i]]$res$direct
-#   sar.2stls.impacts_output[[i]][1:3,2] <- sar.2stls.impacts_summary[[i]]$pzmat[,1]
-#   sar.2stls.impacts_output[[i]][1:3,3] <- sar.2stls.impacts_summary[[i]]$res$indirect
-#   sar.2stls.impacts_output[[i]][1:3,4] <- sar.2stls.impacts_summary[[i]]$pzmat[,2]
-#   sar.2stls.impacts_output[[i]][1:3,5] <- sar.2stls.impacts_summary[[i]]$res$total
-#   sar.2stls.impacts_output[[i]][1:3,6] <- sar.2stls.impacts_summary[[i]]$pzmat[,3]
-# }
+###############################################################################################
+############## Testing the hypothesis of a linear Reltionship between inequality and GDP: ######################
+############## this would be the case if the EU countries were already developed enough to be #################
+############## on the declining part of the inverted-U curve                            #################
 
-##### 2.5. Spatial Panel Models
+################ 1. CLM Model #################################################################
 
-#extract data: 
-data.long <- shp_list[[1]]@data
-for (i in 2:k) {
-  data.long <- rbind(data.long,shp_list[[i]]@data)
+# to test the hypothesis that Eu regions are well developed we test the linear relationship between
+# if it is negative Williamson´s hypothesis holds, if it is positive it doesn´t, the model we use testing
+#this is f2
+f2 <- Y ~ X_1 + X_2
+
+# do regressions for each year seperately
+lm2 <- lapply(1:k, function(i) lm(f2,data=shp_list[[i]]))
+
+# and rename them conviniently
+for (i in 1:k) {
+  names(lm2)[i] <- paste("lm2_", period[i], sep = "")
+  names(lm2[[i]]$coefficients) <- c("(Intercept)", "Beta", "Delta")
 }
-#add time column
-data.long$time <- sort(rep(period,n_2))
-data.long <- as.data.frame(data.long)
-data.long <- data.long[,c(1,11,2:10)]
+#interpretation: all Betas are positive and highly significant, therefore the hypothesis of already being on the declining part
+#can be rejected
 
-#The regression (i set it to pooling, funkt aber keine ahnung was es macht)
-spml(f1, data = data.long, listw = W.list,
-     model="pooling")
+# Test for heteroskedasticity - Breusch-Pagan-Test
+library(AER)
+bp_lm2 <- matrix(nrow = k, ncol = 2)
+dimnames(bp_lm2) <- list(period, c("Breusch-Pagan", "p-value"))
+for (i in 1:k) {
+  bp_lm2[i,1] <- bptest(lm2[[i]])$statistic
+  bp_lm2[i,2] <- bptest(lm2[[i]])$p.value
+}
+# interpretation: there is heteroskedasticity, therefore, OLS is not the best model
+
+# Test for normality - Jarque-Bera Test
+library(tseries)
+jb_lm2 <- matrix(nrow = k, ncol = 2)
+dimnames(jb_lm2) <- list(period, c("Jarque-Bera", "p-value"))
+for (i in 1:k) {
+  jb_lm2[i,1] <- jarque.bera.test(lm2[[i]]$residuals)$statistic
+  jb_lm2[i,2] <- jarque.bera.test(lm2[[i]]$residuals)$p.value
+}
+# interpretation: we can reject the assumption of normality, therefore OLS should not be used
+
+## Tests for Spatial Dependence
+# LM-Tests
+lm_tests2 <- matrix(nrow = k, ncol = 8)
+dimnames(lm_tests2) <- list(period, c("LMerr","p-value","LMlag","p-value","RLMerr","p-value","RLMlag","p-value"))
+for (i in 1:k) {
+  lm_tests2[i,1] <- lm.LMtests(lm2[[i]],listw = W.list,test="LMerr")$LMerr$statistic
+  lm_tests2[i,2] <- lm.LMtests(lm2[[i]],listw = W.list,test="LMerr")$LMerr$p.value
+  lm_tests2[i,3] <- lm.LMtests(lm2[[i]],listw = W.list,test="LMlag")$LMlag$statistic
+  lm_tests2[i,4] <- lm.LMtests(lm2[[i]],listw = W.list,test="LMlag")$LMlag$p.value
+  lm_tests2[i,5] <- lm.LMtests(lm2[[i]],listw = W.list,test="RLMerr")$RLMerr$statistic
+  lm_tests2[i,6] <- lm.LMtests(lm2[[i]],listw = W.list,test="RLMerr")$RLMerr$p.value
+  lm_tests2[i,7] <- lm.LMtests(lm2[[i]],listw = W.list,test="RLMlag")$RLMlag$statistic
+  lm_tests2[i,8] <- lm.LMtests(lm2[[i]],listw = W.list,test="RLMlag")$RLMlag$p.value
+}
+#interpretation: LM-tests show that the SEM is the appropriate model, since RLMLAG is not significant.
+
+################################ 2. Spatial Models ################################
+### since the LM Test suggests, that a SEM performs the best, we estimate a SEM
+
+
+##### 2.1. SEM Model
+# estimating the model
+sem2 <-lapply(1:k, function(i) errorsarlm(f2, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
+names(sem2) <- period
+
+summaries2 <- lapply(sem2, summary)
+
+#interpretation: all Betas are positive and highly significant, therefore the hypothesis of already being on the declining part
+#can be rejected for the SEM as well
+
+
 
 ## 3.1 How to access stuff:
 
