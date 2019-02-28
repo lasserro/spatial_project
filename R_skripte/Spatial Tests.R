@@ -41,7 +41,6 @@ for (i in 1:k) {
   moran_res[i,5] <- f$estimate[1]
   moran_res[i,6] <- f$p.value
 }
-#Die p-values für den mc.moran funkt glaub ich nicht
 
 ## and LISA...
 lisa.test <- list()
@@ -51,25 +50,6 @@ for (i in 1:k) {
   lisa.test[[i]] <- localmoran(lm[[k]]$residuals, listw = W.list, alternative = "greater")
 }
 
-## and attempt to plot lisa
-
-#lisa<-lisa.test[[1]]
-  
-#  lisa.shp <- shp_list[[1]]
-#  lisa.shp@data$lisa <- lisa[,1]
-  
-  
-  # convert to a data.frame
-#  lisa.shp <- fortify(lisa.shp, region="NUTS_ID")
-  
-  
-#  oregon.tract@data, 
-#  by="id"
-#)
-
-#ggplot(data=lisa.shp, aes(x=long,y=lat,group=group)) +
-#  geom_polygon(fill=scales::col_numeric("Blues",domain=c(-1,5))(lisa.shp$lisa)) +
-#  geom_path(color="white")
 
 ### LM-tests
   
