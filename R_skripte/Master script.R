@@ -10,6 +10,7 @@ library(spdep)
 library(plm)
 library(reshape2)
 library(splm)
+library(sphet)
 
 ########################
 ### Data collection
@@ -35,15 +36,16 @@ source("./R_skripte/Data Download.R") #European Regional Database
 # Here we can pre-specify the k-nearest neighbour count:
 kn<-5
 
-#Define which Weightslist to use. K-nearest (W.list.k) or Inverse distance (W.list.inv) 
-W.list <- W.list.k
-# W.list <- W.list.inv
+
 
 # In this section we further construct the inequality index. Overall, we prepare 
 # the data for further analysis.
 
 source("./R_skripte/Data Transformation.R") #ERD
 
+#Define which Weightslist to use. K-nearest (W.list.k) or Inverse distance (W.list.inv) 
+W.list <- W.list.k
+# W.list <- W.list.inv
 
 ########################
 #### Regressions & Testing
