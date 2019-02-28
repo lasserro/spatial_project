@@ -1,12 +1,12 @@
-### 1. Dataset specifications
+#### 1. Dataset specifications ####
 
   drop<-c("NO","LU","CY")
   period<-c(1996:2015)
   overseas <- c("FRA1", "FRA2", "FRA3", "FRA4", "FRZZ", "FRA5", "PT20", "PT30", "PTZZ", "ES70", "ESZZ")
 
-### 2. The Transformation
+#### 2. The Transformation ####
 
-## 2.1 Crop dataset to specification above
+#### 2.1 Crop dataset to specification above ####
 
 charcols <- c("nuts_level", "country", "nuts_2", "nuts_code")
 
@@ -26,7 +26,7 @@ GDP_ERD <- GDP_ERD %>%
 POP_ERD <- POP_ERD %>%
   filter(!nuts_code %in% setdiff(POP_ERD$nuts_code,GDP_ERD$nuts_code))
 
-## 2.2 Fill in neglected regions 
+#### 2.2 Fill in neglected regions ####
 
 # The ERD leaves out regions if the nuts level above is the same.
 # (e.g. with AT13 & AT130, AT130 is not included).This nonsensical approach forces 
@@ -91,7 +91,7 @@ for (i in 1:length(POP_ERD$code2013)) {
   }
 }
 
-## 2.3 Single dataframes for gdp,pop on level 2 & 3
+#### 2.3 Single dataframes for gdp,pop on level 2 & 3 ####
 
 
 pop2 <- POP_ERD %>% filter(nuts_level == 2)
@@ -116,7 +116,7 @@ n_2 <- length(table(pop2$nuts_2))
 k <- length(period)
 
 
-### 3. Die Funktion für CV_w
+#### 3. Die Funktion für CV_w ####
 
 #function to calculate the weighted coefficient of variation
 ##where
@@ -133,10 +133,10 @@ CV <- function(gdp2=NA,gdp3=NA,pop2=NA,pop3=NA){
 }
 
 
-### 4. Create variables for the regression
+#### 4. Create variables for the regression ####
 
 
-## 4.1 Y - The weighted coefficient of variation
+#### 4.1 Y - The weighted coefficient of variation ####
 
 Y<-matrix(NA,n_2,k)
 colnames(Y)<-period
@@ -175,12 +175,12 @@ for (i in 1:length(Y[,1])) {
 
 rm(gdp_2, gdp_3, pop_2, pop_3)
 
-## 4.2 x_1: GDP per capita per for each nuts_2 region 
+#### 4.2 x_1: GDP per capita per for each nuts_2 region ####
 
 X_1 <- as.matrix(gdp2[-(1:4)])
 rownames(X_1)<-unique(pop2$nuts_2)
 
-## 4.3 x_2: number of nuts_3 region in each nuts_2 region
+#### 4.3 x_2: number of nuts_3 region in each nuts_2 region ####
 
 X_2<- POP_ERD %>%
   filter(nuts_level == 3) %>%
@@ -193,7 +193,7 @@ rownames(X_2)<-unique(pop2$nuts_2)
 #X_2 <-X_2[,-1]
 
 
-## 5. Combine with shapefiles
+#### 5. Combine with shapefiles ####
 
 # reduce shape file and the data shp2 to our dataset
 shp <- shp2[shp2$NUTS_ID %in% pop2$nuts_2, ]
@@ -229,13 +229,15 @@ rm(Y0, X_1df, X_2df)
 # if you do it with the shapefiles alone, it renders all results useless.)
 coords <- coordinates(shp_list[[1]])
 
+#### 5.1 Weightsmatrices ####
+
 #and get weights lists and matrices 
 k.near <- knearneigh(coords, k=kn) #indexing neighbors based on k=5
 kn <- knn2nb(k.near) #creating neighborhood list based on the k(5) nearest neighbors
 W.list.k <- nb2listw(kn, style = "W", zero.policy = FALSE) #creating a weights-list
 W.mat <- listw2mat(W.list.k) #creates a weigths matrix
 
-#### reverse distance matrix ####
+### reverse distance matrix #
 distw.tot <- dnearneigh(coords,0,Inf, row.names = shp_list[[1]]$NUTS_ID) #getting a 
 #indexing list where everyone is a neighber to everyone else
 dnbdist.tot <- nbdists(distw.tot, coords) #get distances between observations
