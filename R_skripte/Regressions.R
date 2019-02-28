@@ -1,10 +1,8 @@
-###################################################################################
 ################################### REGRESSIONS ###################################
-###################################################################################
 
 ########################## 1. Classic Linear Model (CLM) ##########################
-##### 1.1. Estimation of CLM
-# define model
+
+#### 1.1 define model ####
 f1 <- Y ~ X_1 + I((X_1)^2) + X_2
 
 # do regressions for each year seperately
@@ -16,6 +14,55 @@ for (i in 1:k) {
   names(lm[[i]]$coefficients) <- c("(Intercept)", "Beta", "Gamma", "Delta")
 }
 
+
+## How to access regressions:
+
+# extract just coefficients
+# sapply(lm, coef)
+
+# if you need more info, get full summary call. now you can get whatever, like:
+# summaries <- lapply(lm, summary)
+
+
+#### 1.2 Prepare Tests for CLM ####
+
+### Compute Morans I of dependent variable
+moran_Y <- matrix(ncol = 4, nrow = k)
+dimnames(moran_Y) <- list(period,c("Moran's I", "Moran_p.value","Moran.mc","Moran.mc_p.value"))
+for (i in 1:k) {
+  f<- moran.test(shp_list[[i]]$Y, listw = W.list, alternative = "greater", randomisation = FALSE)
+  moran_Y[i,1] <- f$estimate[1]
+  moran_Y[i,2] <- f$p.value
+  f<- moran.mc(shp_list[[i]]$Y, listw = W.list, alternative = "greater", nsim = 100)
+  moran_Y[i,3] <- f$statistic
+  moran_Y[i,4] <- f$p.value
+}
+
+### various Test-statistics on residuals
+moran_res <- matrix(ncol = 6, nrow = k)
+dimnames(moran_res) <- list(period,c("Moran's I", "Moran-p-value","Moran.mc","Moran.mc_p.value","Geary C","Geary_p.value"))
+
+for (i in 1:k) {
+  f <- moran.test(lm[[i]]$residuals, listw = W.list, alternative = "greater", randomisation = FALSE)
+  moran_res[i,1] <- f$estimate[1]
+  moran_res[i,2] <- f$p.value
+  f <- moran.mc(lm[[i]]$residuals, listw = W.list, alternative = "greater", nsim = 100)
+  moran_res[i,3] <- f$statistic
+  moran_res[i,4] <- f$p.value
+  f <- geary.test(lm[[i]]$residuals, listw = W.list, alternative = "greater")
+  moran_res[i,5] <- f$estimate[1]
+  moran_res[i,6] <- f$p.value
+}
+
+## LISA 
+lisa.test <- list()
+#lisa.test <- matrix(ncol = 6, nrow = n_2)
+#dimnames(lisa.test) <- list(period,c("LISA","Lisa_p.value"))
+for (i in 1:k) {
+  lisa.test[[i]] <- localmoran(lm[[k]]$residuals, listw = W.list, alternative = "greater")
+}
+
+
 # Test for heteroskedasticity - Breusch-Pagan-Test
 library(AER)
 bp_lm <- matrix(nrow = k, ncol = 2)
@@ -26,9 +73,8 @@ for (i in 1:k) {
 }
 #interpretation: (highly) significant values for each year meaning we are dealing with heteroscedasticity
 
-######################################
+
 # Test for normality - Jarque-Bera Test
-#######################################
 library(tseries)
 jb_lm <- matrix(nrow = k, ncol = 2)
 dimnames(jb_lm) <- list(period, c("Jarque-Bera", "p-value"))
@@ -39,10 +85,8 @@ for (i in 1:k) {
 #Interpretation: since we have significant values for each year, the normality assumption won't hold anymore --> we have to use
 # other estimation methods (GMM), since OLS and ML wouldn't be efficient anymore
 
-##################################
 ## Tests for Spatial Dependence
 # LM-Tests
-###################################
 lm_tests <- matrix(nrow = k, ncol = 8)
 dimnames(lm_tests) <- list(period, c("LMerr","p-value","LMlag","p-value","RLMerr","p-value","RLMlag","p-value"))
 for (i in 1:k) {
@@ -60,12 +104,10 @@ for (i in 1:k) {
 # but the robust version of the test was not significant anymore. Both the LM-LAG, as well as the robust version, 
 # are significant and therefore, we decided to use a SAR-Model. 
 
-####################################################################################
-#####################################################################################
 ################################ 2. Spatial Models ################################
-######################################################################################
 
-##### 2.1. SAR Model
+
+##### 2.1. SAR Model #####
 # estimating the model
 sar <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
 names(sar) <- period
@@ -108,7 +150,7 @@ for (i in 1:k) {
   sar.impacts_output2[[i]][c(4,8,12),1] <- sar.impacts_summary[[i]]$res$total
 }
 
-##################################################
+
 # Test for heteroskedasticity - Breusch-Pagan-Test
 bp_sar <- matrix(nrow = k, ncol = 2)
 dimnames(bp_sar) <- list(period, c("Breusch-Pagan", "p-value"))
@@ -118,7 +160,7 @@ for (i in 1:k) {
 }
 # still (highly) significant values for each year meaning we are dealing with heteroscedasticity
 
-#############################################
+
 # Test for normality - Jarque-Bera Test
 jb_sar <- matrix(nrow = k, ncol = 2)
 dimnames(jb_sar) <- list(period, c("Jarque-Bera", "p-value"))
@@ -141,9 +183,8 @@ for (i in 1:k) {
 }
 rownames(thres_sar) <- period
 
-#######################################
-##### 2.2. SEM Model
-########################################
+##### 2.2. SEM Model #####
+
 # estimating the model
 sem <-lapply(1:k, function(i) errorsarlm(f1, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
 names(sem) <- period
@@ -179,7 +220,7 @@ for (i in 1:k) {
 }
 rownames(thres_sem) <- period
 
-##### 2.3. SDM Model
+##### 2.3. SDM Model ####
 # estimating the model
 sdm <- lapply(1:k, function(i) lagsarlm(f1, data=shp_list[[i]], type="mixed", W.list, tol.solve=1.0e-30))
 names(sdm) <- period
@@ -243,10 +284,9 @@ for (i in 1:k) {
   AIC[i,4] <- AIC(lm[[i]],sar[[i]],sem[[i]],sdm[[i]])[4,2]
 }
 
-########################################
-# ##### 2.4. Spatial Models with GMM
-#######################################
-###### 2.4. 2SLS - SAR
+
+##### 2.4. SAR Model with GMM ######
+
 id <- seq(1, nrow(shp_list[[1]]@data))
 d <- distance(coord=coords, region.id = id, output = TRUE, type = "distance", 
               shape.name = "shapefile", region.id.name="id", firstline = TRUE,
@@ -260,16 +300,14 @@ names(sar.2stls.hac) <- period
 sar.2stls.hac_summaries <- lapply(sar.2stls.hac, summary)
 
 
-###############################################################################################
-############## Testing the hypothesis of a linear Reltionship between inequality and GDP: ######################
-############## this would be the case if the EU countries were already developed enough to be #################
-############## on the declining part of the inverted-U curve                            #################
 
-################ 1. CLM Model #################################################################
+################ 3. Hypothesis of a linear Reltionship between inequality and GDP ########################
+# Testing the hypothesis of a linear Reltionship between inequality and GDP:
+# this would be the case if the EU countries were already developed enough to be
+# on the declining part of the inverted-U curve
 
-# to test the hypothesis that Eu regions are well developed we test the linear relationship between
-# if it is negative Williamson´s hypothesis holds, if it is positive it doesn´t, the model we use testing
-#this is f2
+##### 3.1 CLM-Model ####
+
 f2 <- Y ~ X_1 + X_2
 
 # do regressions for each year seperately
@@ -319,11 +357,9 @@ for (i in 1:k) {
 }
 #interpretation: LM-tests show that the SEM is the appropriate model, since RLMLAG is not significant.
 
-################################ 2. Spatial Models ################################
+###### 3.2 SEM Model ################################
 ### since the LM Test suggests, that a SEM performs the best, we estimate a SEM
 
-
-##### 2.1. SEM Model
 # estimating the model
 sem2 <-lapply(1:k, function(i) errorsarlm(f2, data=shp_list[[i]], W.list, tol.solve=1.0e-30))
 names(sem2) <- period
@@ -335,17 +371,3 @@ summaries2 <- lapply(sem2, summary)
 
 
 
-## 3.1 How to access stuff:
-
-# extract just coefficients
-# sapply(lm, coef)
-
-# if you need more info, get full summary call. now you can get whatever, like:
-# summaries <- lapply(lm, summary)
-
-# ...coefficents with p values:
-# lapply(summaries, function(x) x$coefficients[, c(1,4)])
-
-# ...or r-squared values
-# sapply(summaries, function(x) c(r_sq = x$r.squared, 
-# adj_r_sq = x$adj.r.squared))
