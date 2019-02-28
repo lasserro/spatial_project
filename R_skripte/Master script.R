@@ -21,48 +21,61 @@ library(splm)
 
 source("./R_skripte/Data Download.R") #European Regional Database
 
-### Data transformation
-#In the following we have two specifications for the dataset, first a maximal set, 
-# with all countries and periods which we used to assess which ones we will keep in the end. 
-# The min-specification which we ended up using later on includes all countries from 
-# the ERD, with few exceptions: 
-#--Malta, Cyprys: stastical reasons (Nuts 2 = Nuts 3 = Nuts 1)
-#--Norway, (we concentrate on EU)
-#--CHECK
+########################
+### Data Transformation
+########################
 
-# Define min <- 1 for minimal working dataset
-# Define min <- 0 for maximal dataset
+# In the following we restict our dataset to all countries within the ERD with
+# the following exceptions:
+  #--Cyprys, Luxembuorg: stastical reasons (Nuts 2 = Nuts 3 = Nuts 1)
+  #--Norway, (we concentrate on EU)
+  #--overseas regions
 
-min<-1
 
-#define Weightsmatrix for k-nearest neighbour
-
+# Here we can pre-specify the k-nearest neighbour count:
 kn<-5
-#In this section we construct the inequality index, as well as the weight matrices we will use in the regressions. Overall, we prepare 
-# the data for further analysis.
 
-
-source("./R_skripte/Data Transformation.R") #ERD
-
-#rm(X_1,X_2,Y,drop,min,overseas,CV,GDP_ERD,POP_ERD,gdp2,gdp3,pop2,pop3)
-
-### Tests
-#Define Weightslist
+#Define which Weightslist to use. K-nearest (W.list.k) or Inverse distance (W.list.inv) 
 W.list <- W.list.k
 # W.list <- W.list.inv
 
+# In this section we further construct the inequality index. Overall, we prepare 
+# the data for further analysis.
+
+source("./R_skripte/Data Transformation.R") #ERD
+
+
 ########################
-#### Testing
+#### Regressions & Testing
 ########################
+# The following script is divided into 3 sections:
+  # -- 1.) Classical Linear Model
+  # -- 2.) Spatial Models
+  # -- 3.) Testing the hypothesis of a linear relationship between inequality and GDP
 
-#We used morans I, as well as LISA, both suggeted that there is spatial dependence. Further testing follows in the regression part,
-# after we estimated the different models
+########
+### 1.) We estimate simply OLS for applying certain tests on special dependence
 
-source("./R_skripte/Spatial Tests.R") #ERD
+ # Morans I
+ # LISA
+ # Breush-Pagan (for Heteroskedasticity)
+ # Jarque-Bera (for normality)
+ # LM Tests (for spatial dependence)
 
-#########################
-### Regressions
-##########################
+########
+### 2.) Estimating spatial models
+
+# 2.1 ) SAR- Model
+# 2.2 ) SEM- Model
+# 2.3 ) SDM- Model
+# 2.4 ) 2SLS estimation of SAR- Model
+
+########
+### 3.) Hypothesis testing of linear relationship
+
+# 3.1 ) Classical Linear Model
+# 3.2 ) SEM- Model
+
 source("./R_skripte/Regressions.R") #ERD
 
 #First we estimated an OLS model, which already rejected the inverted-U theory. Since morans I and LISA suggested that
